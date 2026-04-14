@@ -1,136 +1,101 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5cde762fe5a69ac3132e087b4949355a-thumbnail.jpg" group-title="Baseball",Arizona Diamondbacks vs. Baltimore Orioles 04/13 10:35 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/ari-bal
-#EXTVLCOPT:http-origin=https://pooembed.eu
+#EXTINF:-1 tvg-logo="https://api.cdnlivetv.tv/api/v1/channels/images6318/chile/tnt-sports.png" group-title="Primera Division",Deportes Concepción vs Unión La Calera 04/14 12:00 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=tnt+sports&code=cl&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/DgNwzTaVkVMZvZPXAjbpjCaYbdfWhDCi/1776108900/1776139500/baltimoreorioles/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/06876c1b9d87a407b4e4772ba2eafddb-thumbnail.jpg" group-title="Baseball",Chicago Cubs vs. Philadelphia Phillies 04/13 10:40 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/chc-phi
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/cl-tnt-sports/playlist.m3u8?token=df66310fe7bbdb5cba135c59eeba3161b5d5cfe5d2ca8ace5d0792546936930c.1776130146.03516dffad9f092b10d05ec0a578e049.e16a0a5c61404971927c337a96f9a288.f26aac4e09feebd1323920f9243b6a48&signature=9cca14c8867f2e093b4664d5e73404412a493bf6811f5e82b2bc9c83fff51a29
+#EXTINF:-1 tvg-logo="https://api.cdnlivetv.tv/api/v1/channels/images6318/argentina/tnt-sports.png" group-title="Primera División",Central Córdoba SdE vs Vélez Sarsfield 04/14 12:30 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=tnt+sports&code=ar&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/NXoebjWEqkfZtuFkHUyIXFKMmKwqFnSU/1776109200/1776139800/philadelphiaphillies/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5586ffcb0c9a1da05cedb6da29522533-thumbnail.jpg" group-title="Baseball",Washington Nationals vs. Pittsburgh Pirates 04/13 10:40 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/wsh-pit
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/ar-tnt-sports/playlist.m3u8?token=3b4d6fa8373a06fe0204821368f6ad253efede3f7bb71d08c6855e918ccbfb2b.1776130146.3c51fb7d0ae532c3311fb1eb942ea5d3.087ae89bdcd45048c8f7efe0c80f28b5.619de559c1ba34447e95fa1db881820f&signature=49ac4aeb557081d57680f65e9ca7f955198c3ac2a4e1d180699b6816467c9e00
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/6cb0640dbdf5df15634b87a4cbd8f433-thumbnail.jpg" group-title="NHL",Tampa Bay Lightning vs Detroit Red Wings 04/13 11:00 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=tnt+sports+7&code=gb&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/vZGdxXRYHzWwUOnaIJrvCOYJHTJIMKOW/1776109200/1776139800/pittsburghpirates/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/6cb0640dbdf5df15634b87a4cbd8f433-thumbnail.jpg" group-title="Ice Hockey",Detroit Red Wings vs. Tampa Bay Lightning 04/13 11:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/det-tb
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://cdnlivetv.tv/api/v1/channels/player/?name=tnt+sports+7&code=gb&user=cdnlivetv&plan=free
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/594e570d04c9de030e7eceb75e9b458f-thumbnail.jpg" group-title="NHL",Florida Panthers vs New York Rangers 04/13 11:00 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=msg&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/gzlSCDIrhOJZAYuuTZMPfpFbWOcsBxux/1776110400/1776139200/tampabaylightning/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/594e570d04c9de030e7eceb75e9b458f-thumbnail.jpg" group-title="Ice Hockey",New York Rangers vs. Florida Panthers 04/13 11:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/nyr-fla
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-msg/playlist.m3u8?token=2de8840ad826f07b11ff708b22f6379ac544fcbc4f4f7c4d61d58f827be12a03.1776130157.373c06f5b604e9d062c8af2375daa449.55eda9e33b9ee954c9bf56a7b436c9ec.de0bef2c33a6d8ad0bf98ec9dad8fc49&signature=a13c2500bb79b29277e12916756d6b87bd637a6f9dae7e8f215ccb18387a8aca
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/981d73015492c5d01cb6ae9d41b0ce33-thumbnail.jpg" group-title="NHL",Philadelphia Flyers vs Carolina Hurricanes 04/13 11:00 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=nbcs+california&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/mqVDMBftofmxiXQspvTZGKshgAMtSKaa/1776110400/1776139200/floridapanthers/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/981d73015492c5d01cb6ae9d41b0ce33-thumbnail.jpg" group-title="Ice Hockey",Carolina Hurricanes vs. Philadelphia Flyers 04/13 11:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/car-phi
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://cdnlivetv.tv/api/v1/channels/player/?name=nbcs+california&code=us&user=cdnlivetv&plan=free
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1e52f0da94273f149ed1e7752dcda6e5-thumbnail.jpg" group-title="NHL",Toronto Maple Leafs vs Dallas Stars 04/13 11:30 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=sky+sport+bundesliga+7&code=de&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/fVRYWCFzWGeeDjmVFIsOwupwVUQpfpXb/1776110400/1776139200/philadelphiaflyers/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/c54a81f2b25eed9e34819fc891500abe-thumbnail.jpg" group-title="Baseball",Los Angeles Angels vs. New York Yankees 04/13 11:05 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/laa-nyy
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://cdnlivetv.tv/api/v1/channels/player/?name=sky+sport+bundesliga+7&code=de&user=cdnlivetv&plan=free
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1009509df44cb916678a6994fe754264-thumbnail.jpg" group-title="NHL",Nashville Predators vs San Jose Sharks 04/14 12:00 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=nbcs+california&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/iZHfbkddLuvXTyzXePOfZtBNAcdBjrpx/1776110700/1776141300/newyorkyankees/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/d62af8de6a6fe9ebcfc3fc921fd3ee71-thumbnail.jpg" group-title="Baseball",Miami Marlins vs. Atlanta Braves 04/13 11:15 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/mia-atl
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-nbcs-california/playlist.m3u8?token=63fee23007712ddb0dc9fd2b652f7206cde85252c3b2f640a57322eb86fa6f4a.1776130168.d7caef62ac377a0db1b5039138f08250.dae040b1ddf4003ee8479e1fab8f8a6f.4d7aca33ccab211d98c01c2cc84d8742&signature=25d4fe4abc44c35c54aefc2ffe3c4ca4cc300e3f90361cbdf8a7fb828db6a8da
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1138d9379ebe005b45dffd5905ba2389-thumbnail.jpg" group-title="NHL",Seattle Kraken vs Los Angeles Kings 04/14 01:30 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=espn&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/EFosGqHIVQAhqCNtKinVHdMmlJUsFJeX/1776111300/1776141900/atlantabraves/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1e52f0da94273f149ed1e7752dcda6e5-thumbnail.jpg" group-title="Ice Hockey",Dallas Stars vs. Toronto Maple Leafs 04/13 11:30 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/dal-tor
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-espn/playlist.m3u8?token=b7311c7c6cce9bc51bb50ee38e9b6d00fead67518c91a42a44d0fab513732455.1776130168.2857e818ded6862214d0410b38b63a4b.67b19dd69969cbca3f8134e72a0f34f3.2a3138862e1c8de51da8a86346577fe8&signature=26bbb97fe046c4fbb37c769b4898c89042a803619d1deec9a0fa54bd517a3d7c
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/799a6cfa68cee86a525c6703d4c19254-thumbnail.jpg" group-title="NHL",Edmonton Oilers vs Colorado Avalanche 04/14 01:30 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=viaplay+sports+1&code=gb&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/BnRIFECWPZFRFBnfAmeCcOotfVmJdafq/1776112200/1776141000/torontomapleleafs/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/40513cb623d82eb57fa960daff7d807d-thumbnail.jpg" group-title="Baseball",Boston Red Sox vs. Minnesota Twins 04/13 11:40 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/bos-min
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://cdnlivetv.tv/api/v1/channels/player/?name=viaplay+sports+1&code=gb&user=cdnlivetv&plan=free
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/e1d8ded61aa390f9d702e6e105b183a8-thumbnail.jpg" group-title="NHL",Vegas Golden Knights vs Winnipeg Jets 04/14 02:00 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=viaplay+sports+2&code=gb&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/IhbvQtnjJxHNFlKWMnNxZhYhNVBcxtNK/1776112800/1776143400/minnesotatwins/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/2b1bd2f8f779e56b280690cf5ac98ba7-thumbnail.jpg" group-title="Baseball",Cleveland Guardians vs. St. Louis Cardinals 04/13 11:45 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/cle-stl
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/gb-viaplay-sports-2/playlist.m3u8?token=4f7c2829e44c7f6e9c5c8a8f5c604ab200fbe107e998c3c6aedb082273d67051.1776130179.d95f9a5e0581b67c15bd15869bf214ab.41792ef7a642b8390a6286e0c3cf0de8.b14031fa8bdfae198d494fe0ef712580&signature=355cefdd80143041f3f54703a7e19d5e5ed63953909a77af454e533228760f58
+#EXTINF:-1 tvg-logo="https://api.cdnlivetv.tv/api/v1/channels/images6318/united-states/sec-network.svg" group-title="College Softball",Kentucky vs Tennessee 04/13 11:00 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=sec+network&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/tFEFgthYNaaXnAhOyzUiarldMtlvbMZB/1776113100/1776143700/stlouiscardinals/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/01fe791b84156667f612530c92faab17-thumbnail.jpg" group-title="Ice Hockey",Minnesota Wild vs. St. Louis Blues 04/14 12:00 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/min-stl
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://cdnlivetv.tv/api/v1/channels/player/?name=sec+network&code=us&user=cdnlivetv&plan=free
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5cde762fe5a69ac3132e087b4949355a-thumbnail.jpg" group-title="MLB",Arizona Diamondbacks vs Baltimore Orioles 04/13 10:35 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=baltimore+orioles&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/ENvyEhBVscnoCyduwbyJfksUpPYsJtbQ/1776114000/1776142800/stlouisblues/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1009509df44cb916678a6994fe754264-thumbnail.jpg" group-title="Ice Hockey",San Jose Sharks vs. Nashville Predators 04/14 12:00 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/sj-nsh
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-mlb-baltimore-orioles/playlist.m3u8?token=8681c311aee2682bd3b2e8fb22146d763c368b79d99771b8a28173022a13fb69.1776130179.54e222619ce0e8328cdc287f090639fa.f3dee978d8ff84050d3c092bd9fcf68e.c8f774414fe778158ee83c906567801a&signature=7b90bad5a4243fb5138bfbb0833ab525617a6de6da87e6736cf27e089a9b6a57
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/06876c1b9d87a407b4e4772ba2eafddb-thumbnail.jpg" group-title="MLB",Chicago Cubs vs Philadelphia Phillies 04/13 10:40 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=philadelphia+phillies&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/nFspImwsKBXomblcpuxkQpTLqjVdeHdQ/1776114000/1776142800/nashvillepredators/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/56336f9d22c51c416e1a56afbd18f314-thumbnail.jpg" group-title="Wrestling",WWE: Monday Night RAW 04/14 12:00 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/wwe/raw/2026-04-13
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-mlb-philadelphia-phillies/playlist.m3u8?token=f4be14432928b1b2ed6fb154416f9fb598f28553a84c9a39f03ffed25e949fca.1776130190.bee0dc14e0c8585ca1010fff145d5d84.97bb026808a946ac0c5875d9d4ca19c7.9599e722c2dfa785226be22912045652&signature=ce33548f85b8537aa5c6719368cfbcc40ce3d7d96cfbd042807cdba5db8bedb2
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5586ffcb0c9a1da05cedb6da29522533-thumbnail.jpg" group-title="MLB",Washington Nationals vs Pittsburgh Pirates 04/13 10:40 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=pittsburgh+pirates&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/eCvKQQotYJfGbvNJxyrMRvmHCaftpSSN/1776114000/1776142800/wwe_raw/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/b66e5458c476ff74d4b0e7df1714034a-thumbnail.jpg" group-title="Ice Hockey",Buffalo Sabres vs. Chicago Blackhawks 04/14 12:30 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/buf-chi
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-mlb-pittsburgh-pirates/playlist.m3u8?token=344985a9705c5a6cd44e8516fa28bc2502d103dda7ee8cb028e84bb9016f732f.1776130190.31384ae7f0978e161485261977dc0701.f675d8858498faa9a56cf9ab64dc7746.2d17ccb885f9fa414f5ae557fcc1995c&signature=8b643fc72844ecc47b4d1f665cf41701b8447cc848f111a01d0b3b035e18f417
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/c54a81f2b25eed9e34819fc891500abe-thumbnail.jpg" group-title="MLB",Los Angeles Angels vs New York Yankees 04/13 11:05 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=new+york+yankees&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/CRhxlAXMYaEJBZQfLjjHCxfyolAhDwPC/1776115800/1776144600/chicagoblackhawks/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/799a6cfa68cee86a525c6703d4c19254-thumbnail.jpg" group-title="Ice Hockey",Colorado Avalanche vs. Edmonton Oilers 04/14 01:30 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/col-edm
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-mlb-new-york-yankees/playlist.m3u8?token=134a3c7167f2229c0c63d7d5020cc5df36175aca5b9a7ac1b61d74510d38b121.1776130190.dc09e1a6ba2d8886a9f746963523c694.7713c2d92c302d2aaf483a5258570dea.852e6bbec1955cacf384fb5c15847328&signature=83094e57f1cb5300434282c236cf4dedec0881a5be8586311c996e5473168025
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/d62af8de6a6fe9ebcfc3fc921fd3ee71-thumbnail.jpg" group-title="MLB",Miami Marlins vs Atlanta Braves 04/13 11:15 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=atlanta+braves&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/jmeFekQmgZkLMmscSUhKumjDdmVgziBa/1776119400/1776148200/edmontonoilers/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1138d9379ebe005b45dffd5905ba2389-thumbnail.jpg" group-title="Ice Hockey",Los Angeles Kings vs. Seattle Kraken 04/14 01:30 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/la-sea
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-mlb-atlanta-braves/playlist.m3u8?token=66bb1cfd035b7bc86ae12efed22317d60e8b02c565111b10f7918ed820058e1d.1776130201.2528449b35e30058b9b753de9d9116b9.c577765aee87425d00aa0e935fbad15c.f9460aaa390cd71007f982af8712dc8b&signature=586284c5707e0805f202b85adb63d6d80c80af8eb20b2ac04dd9fb0523f25405
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/40513cb623d82eb57fa960daff7d807d-thumbnail.jpg" group-title="MLB",Boston Red Sox vs Minnesota Twins 04/13 11:40 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=minnesota+twins&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/HLEvEPaOGJVVoFOaTAuyTLpZsnztqIDn/1776119400/1776148200/seattlekraken/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/b9d883f7282acb88b2c6f875c6023ef4-thumbnail.jpg" group-title="Baseball",Texas Rangers vs. Athletics 04/14 01:40 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/tex-ath
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://cdnlivetv.tv/api/v1/channels/player/?name=minnesota+twins&code=us&user=cdnlivetv&plan=free
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/2b1bd2f8f779e56b280690cf5ac98ba7-thumbnail.jpg" group-title="MLB",Cleveland Guardians vs St. Louis Cardinals 04/13 11:45 PM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=st+louis+cardinals&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/YZVFHdqxcrOhJSovVJxFVggVtIVHbPBU/1776120000/1776150600/athletics/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/e1d8ded61aa390f9d702e6e105b183a8-thumbnail.jpg" group-title="Ice Hockey",Winnipeg Jets vs. Vegas Golden Knights 04/14 02:00 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/nhl/2026-04-13/wpg-vgk
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-mlb-st-louis-cardinals/playlist.m3u8?token=be31bdb49847de57f92c603edbcfb0c9df81839231e66ea2ff4cb88110e86e9e.1776130201.ed3b17a80143dfb796ab0a653d1997fa.61db2b11da7917c5dc5a9b34d0e1da38.70871e85145056a27aec77506fef57c3&signature=130a9266a97eb044f91ec5ad0654c154bb3e81625d91e24fa30aec857a6b0ba6
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/b9d883f7282acb88b2c6f875c6023ef4-thumbnail.jpg" group-title="MLB",Texas Rangers vs Oakland Athletics 04/14 01:40 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=nbcs+california&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/tkFnVNvQICeLVuireRJNJrOixNPYZmHX/1776121200/1776150000/vegasgoldenknights/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/247de09245649600a612326e76e2b77c-thumbnail.jpg" group-title="Baseball",New York Mets vs. Los Angeles Dodgers 04/14 02:10 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/mlb/2026-04-13/nym-lad
-#EXTVLCOPT:http-origin=https://pooembed.eu
+https://edge.cdnlivetv.ru/secure/api/v1/us-nbcs-california/playlist.m3u8?token=7f4e412d53b8b7ebd9e808c3a43ad4c753f72daacb34ebdf0dc249435933985c.1776130212.7d550af2ab7a78162140784750645e49.9ae17c85e5e06c7a7ef50d92152ff11e.4290b8b86f5b096a7898a21257b1863f&signature=6e6d10535b726bdafab7ee2a305d2cc33fd8d622a6b6e7880e8672728908af4d
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/c54a81f2b25eed9e34819fc891500abe-thumbnail.jpg" group-title="MLB",New York Mets vs Los Angeles Dodgers 04/14 02:10 AM
+#EXTVLCOPT:http-referrer=https://cdnlivetv.tv/api/v1/channels/player/?name=los+angeles+dodgers&code=us&user=cdnlivetv&plan=free
+#EXTVLCOPT:http-origin=https://cdnlivetv.tv
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/HrzzPQNbYVbougsIvLJaeyXTywyzUdgn/1776121800/1776152400/losangelesdodgers/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/a2ad797c4ab494b891bee24800ff8ee2-thumbnail.jpg" group-title="Cricket",Chennai Super Kings vs. Kolkata Knight Riders 04/14 02:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/ipl/2026-04-14/csk-kkr
-#EXTVLCOPT:http-origin=https://pooembed.eu
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/WwlSyqWcsgvSlgXURYRMOabQtCyLQNDp/1776164400/1776196800/ipl/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/0b3f5d03423e6fa3e8cd56c08876c340-thumbnail.jpg" group-title="Football",Atlético Madrid vs. Barcelona 04/14 07:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/ucl/2026-04-14/atm-bar
-#EXTVLCOPT:http-origin=https://pooembed.eu
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/LFgHciYduYQBBPBKaSNJjNotWewFMTNP/1776182400/1776209400/ucl_atm/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/8cbd3ddefa94c4437d0f74df98bad7dc-thumbnail.jpg" group-title="Football",Liverpool vs. Paris Saint-Germain 04/14 07:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/ucl/2026-04-14/liv-psg
-#EXTVLCOPT:http-origin=https://pooembed.eu
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/nmsclmEcLBfXsumOQgDjUaVUBuelparG/1776182400/1776209400/ucl_liv/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ef5595e08561ede45c52b36a0b62af76-thumbnail.jpg" group-title="Wrestling",WWE: NXT 04/15 12:00 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/wwe/nxt/2026-04-14
-#EXTVLCOPT:http-origin=https://pooembed.eu
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/GwaYTWAQYyWCCzpZkegKMKUXKACnyATm/1776200400/1776229200/wwe_nxt/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/3c8cb5700183b9187fde3113e4dd532b-thumbnail.jpg" group-title="Football",Arsenal vs. Sporting CP 04/15 07:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/ucl/2026-04-15/ars-scp
-#EXTVLCOPT:http-origin=https://pooembed.eu
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/dHzzbBqKxNeUmlnAvWGyIozilAktDzpF/1776268800/1776295800/ucl_ars/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/d93899862a4855d2d8d2c1efa81f191c-thumbnail.jpg" group-title="Football",Bayern Munich vs. Real Madrid 04/15 07:00 PM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/ucl/2026-04-15/mun-rma
-#EXTVLCOPT:http-origin=https://pooembed.eu
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/VeWFAjqnvqLZCzMUXAEFDzxBUOFcwTkw/1776268800/1776295800/ucl_mun/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/b406ff9100d91b9210600260350246ff-thumbnail.jpg" group-title="Wrestling",AEW: Wednesday Night Dynamite 04/16 12:00 AM
-#EXTVLCOPT:http-referrer=https://pooembed.eu/embed/aew/dynamite/2026-04-15
-#EXTVLCOPT:http-origin=https://pooembed.eu
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://netanyahu.modifiles.fans/secure/bYIVyqIssFIYmVajlADPmhCVrXKjJQto/1776286800/1776315600/TBS/tracks-v1a1/mono.ts.m3u8
+https://cdnlivetv.tv/api/v1/channels/player/?name=los+angeles+dodgers&code=us&user=cdnlivetv&plan=free
