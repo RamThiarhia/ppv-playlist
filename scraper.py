@@ -1,6 +1,7 @@
 """
 PPV.to M3U Playlist Generator
 Uses Playwright to intercept real .m3u8 stream URLs from embed pages.
+Referer/Origin per-stream = the embed page URL itself.
 """
 
 import asyncio
@@ -21,25 +22,18 @@ OUTPUT_FILE = "playlist.m3u"
 HOURS_BEFORE = 2
 HOURS_AFTER  = 24
 
-EMBED_REFERER    = "https://ppv.to/"
-EMBED_ORIGIN     = "https://ppv.to"
 EMBED_USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
-# Intercept any request whose URL contains these strings
-M3U8_PATTERNS = [".m3u8", "/mono.ts", "/tracks-v1a1"]
-
-# How long to wait (ms) for the player to fire its stream request
+M3U8_PATTERNS  = [".m3u8", "/mono.ts", "/tracks-v1a1"]
 PLAYER_WAIT_MS = 8_000
-
-# Max concurrent browser pages
 MAX_CONCURRENT = 3
 
 
-# ── helpers ──────────────────────────────────────────────────────────────────
+# ── helpers ───────────────────────────────────────────────────────────────────
 
 def get_api_data():
     for url in API_MIRRORS:
@@ -57,7 +51,6 @@ def get_api_data():
 
 
 def format_time_label(ts):
-    """Unix timestamp -> '04/13 10:30 AM' (UTC)."""
     dt = datetime.fromtimestamp(ts, tz=timezone.utc)
     return dt.strftime("%m/%d %I:%M %p")
 
@@ -73,22 +66,34 @@ def in_window(starts_at, ends_at, now, win_start, win_end):
 
 
 def fix_url(url):
-    """Replace index.m3u8 with the mono TS variant."""
     return re.sub(r"index\.m3u8$", "tracks-v1a1/mono.ts.m3u8", url, flags=re.I)
+
+
+def embed_origin(iframe_url):
+    """Extract just the scheme+host from the iframe URL, e.g. https://pooembed.eu"""
+    from urllib.parse import urlparse
+    p = urlparse(iframe_url)
+    return f"{p.scheme}://{p.netloc}"
 
 
 # ── Playwright extraction ─────────────────────────────────────────────────────
 
 async def extract_m3u8(semaphore, browser, iframe_url):
-    """Open the embed page in a browser tab and intercept the .m3u8 request."""
+    """
+    Open embed page with:
+      Referer : the iframe URL itself  (e.g. https://pooembed.eu/embed/...)
+      Origin  : scheme+host of iframe  (e.g. https://pooembed.eu)
+    Then intercept the .m3u8 network request.
+    """
     async with semaphore:
         found = []
+        origin = embed_origin(iframe_url)
 
         context = await browser.new_context(
             user_agent=EMBED_USER_AGENT,
             extra_http_headers={
-                "Referer": EMBED_REFERER,
-                "Origin":  EMBED_ORIGIN,
+                "Referer": iframe_url,
+                "Origin":  origin,
             },
         )
         page = await context.new_page()
@@ -104,7 +109,7 @@ async def extract_m3u8(semaphore, browser, iframe_url):
             await page.goto(iframe_url, wait_until="domcontentloaded", timeout=20_000)
             await page.wait_for_timeout(PLAYER_WAIT_MS)
         except Exception as e:
-            print(f"  page load error ({iframe_url}): {e}")
+            print(f"  page error ({iframe_url}): {e}")
         finally:
             await page.close()
             await context.close()
@@ -121,7 +126,9 @@ def write_playlist(entries):
     ok = fail = 0
 
     for e in entries:
-        url = e.get("stream_url")
+        url        = e.get("stream_url")
+        iframe_url = e.get("iframe", "")
+
         if not url:
             fail += 1
             continue
@@ -130,11 +137,15 @@ def write_playlist(entries):
         display_name = f"{e['name']} {time_label}"
         logo         = e.get("poster", "")
         category     = e.get("category", "Sports")
+        origin       = embed_origin(iframe_url)
 
         lines.append(
             f'#EXTINF:-1 tvg-logo="{logo}" group-title="{category}",{display_name}'
         )
-        lines.append(f'#EXTVLCOPT:http-referrer={EMBED_REFERER}')
+        # Referer = the embed page URL, Origin = its host — matches what the
+        # CDN expects based on how the player loaded the stream.
+        lines.append(f'#EXTVLCOPT:http-referrer={iframe_url}')
+        lines.append(f'#EXTVLCOPT:http-origin={origin}')
         lines.append(f'#EXTVLCOPT:http-user-agent={EMBED_USER_AGENT}')
         lines.append(url)
         ok += 1
@@ -142,7 +153,7 @@ def write_playlist(entries):
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    print(f"\nPlaylist saved -> {OUTPUT_FILE}  ({ok} streams, {fail} failed/not found)")
+    print(f"\nPlaylist saved -> {OUTPUT_FILE}  ({ok} ok, {fail} failed)")
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -161,7 +172,6 @@ async def main():
         print("ERROR: all API mirrors failed.")
         return
 
-    # collect candidate streams
     candidates = []
 
     for group in data.get("streams", []):
@@ -196,28 +206,19 @@ async def main():
     print(f"Streams in window : {len(candidates)}")
     print("-" * 56)
 
-    # launch browser and extract m3u8 URLs
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
 
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(headless=True)
-
-        tasks = [
-            extract_m3u8(semaphore, browser, c["iframe"])
-            for c in candidates
-        ]
-
+        tasks   = [extract_m3u8(semaphore, browser, c["iframe"]) for c in candidates]
         results = await asyncio.gather(*tasks)
-
         await browser.close()
 
-    # attach results and print summary
     for c, url in zip(candidates, results):
         c["stream_url"] = url
         time_s = format_time_label(c["starts_at"]) if c["starts_at"] else "LIVE"
-        status = f"OK  {url[:70]}" if url else "FAIL not found"
-        print(f"  [{c['category']}] {c['name']} @ {time_s}")
-        print(f"    {status}")
+        status = f"OK  {url[:70]}" if url else "FAIL"
+        print(f"  [{c['category']}] {c['name']} @ {time_s} -> {status}")
 
     write_playlist(candidates)
 
