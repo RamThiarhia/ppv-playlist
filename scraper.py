@@ -1,10 +1,14 @@
 """
 PPV.to M3U Playlist Generator
-Fetches today's streams from api.ppv.to and generates a playlist.m3u file
+Uses Playwright to intercept real .m3u8 stream URLs from embed pages.
 """
 
-import requests
+import asyncio
+import re
 from datetime import datetime, timezone, timedelta
+
+import requests
+from playwright.async_api import async_playwright
 
 
 API_MIRRORS = [
@@ -14,13 +18,30 @@ API_MIRRORS = [
 
 OUTPUT_FILE = "playlist.m3u"
 
-# How many hours before/after current time to include streams
-HOURS_BEFORE = 2   # include streams that started up to 2 hrs ago
-HOURS_AFTER = 24   # include streams starting within next 24 hrs
+HOURS_BEFORE = 2
+HOURS_AFTER  = 24
 
+EMBED_REFERER    = "https://ppv.to/"
+EMBED_ORIGIN     = "https://ppv.to"
+EMBED_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36"
+)
+
+# Intercept any request whose URL contains these strings
+M3U8_PATTERNS = [".m3u8", "/mono.ts", "/tracks-v1a1"]
+
+# How long to wait (ms) for the player to fire its stream request
+PLAYER_WAIT_MS = 8_000
+
+# Max concurrent browser pages
+MAX_CONCURRENT = 3
+
+
+# ── helpers ──────────────────────────────────────────────────────────────────
 
 def get_api_data():
-    """Try each mirror until one works."""
     for url in API_MIRRORS:
         try:
             print(f"Trying {url} ...")
@@ -28,141 +49,178 @@ def get_api_data():
             if r.status_code == 200:
                 data = r.json()
                 if data.get("success"):
-                    print(f"Success from {url}")
+                    print(f"Got data from {url}")
                     return data
         except Exception as e:
-            print(f"Failed {url}: {e}")
+            print(f"  FAIL {url}: {e}")
     return None
 
 
-def format_time_label(timestamp):
-    """Convert unix timestamp to readable label like 04/13 10:30 AM"""
-    dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+def format_time_label(ts):
+    """Unix timestamp -> '04/13 10:30 AM' (UTC)."""
+    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
     return dt.strftime("%m/%d %I:%M %p")
 
 
-def is_today_stream(starts_at, ends_at, now, start_window, end_window):
-    """Check if stream falls within our time window."""
-    # Always-live streams (starts_at == 0)
-    if starts_at == 0:
-        return False  # skip 24/7 channels; set to True if you want them
-
-    event_start = datetime.fromtimestamp(starts_at, tz=timezone.utc)
-    event_end = datetime.fromtimestamp(ends_at, tz=timezone.utc) if ends_at else None
-
-    # Include if: event starts within window OR is currently live
-    starts_soon = start_window <= event_start <= end_window
-    currently_live = event_start <= now and (event_end is None or event_end >= now)
-
+def in_window(starts_at, ends_at, now, win_start, win_end):
+    if not starts_at:
+        return False
+    ev_start = datetime.fromtimestamp(starts_at, tz=timezone.utc)
+    ev_end   = datetime.fromtimestamp(ends_at, tz=timezone.utc) if ends_at else None
+    starts_soon    = win_start <= ev_start <= win_end
+    currently_live = ev_start <= now and (ev_end is None or ev_end >= now)
     return starts_soon or currently_live
 
 
-def build_stream_url(iframe_url):
-    """
-    Build the embed URL. The iframe points to the player page.
-    We use it directly as the stream URL since actual m3u8 requires
-    a headless browser to intercept. For direct playlist use, we
-    embed the iframe URL as the stream link.
-    """
-    return iframe_url
+def fix_url(url):
+    """Replace index.m3u8 with the mono TS variant."""
+    return re.sub(r"index\.m3u8$", "tracks-v1a1/mono.ts.m3u8", url, flags=re.I)
 
 
-def generate_playlist(streams_today):
-    """Write streams to M3U format."""
+# ── Playwright extraction ─────────────────────────────────────────────────────
+
+async def extract_m3u8(semaphore, browser, iframe_url):
+    """Open the embed page in a browser tab and intercept the .m3u8 request."""
+    async with semaphore:
+        found = []
+
+        context = await browser.new_context(
+            user_agent=EMBED_USER_AGENT,
+            extra_http_headers={
+                "Referer": EMBED_REFERER,
+                "Origin":  EMBED_ORIGIN,
+            },
+        )
+        page = await context.new_page()
+
+        def on_request(request):
+            u = request.url
+            if any(p in u for p in M3U8_PATTERNS) and u not in found:
+                found.append(u)
+
+        page.on("request", on_request)
+
+        try:
+            await page.goto(iframe_url, wait_until="domcontentloaded", timeout=20_000)
+            await page.wait_for_timeout(PLAYER_WAIT_MS)
+        except Exception as e:
+            print(f"  page load error ({iframe_url}): {e}")
+        finally:
+            await page.close()
+            await context.close()
+
+        if found:
+            return fix_url(found[0])
+        return None
+
+
+# ── playlist writer ───────────────────────────────────────────────────────────
+
+def write_playlist(entries):
     lines = ["#EXTM3U"]
+    ok = fail = 0
 
-    for entry in streams_today:
-        category = entry["category"]
-        name = entry["name"]
-        tag = entry.get("tag", "")
-        poster = entry.get("poster", "")
-        iframe = entry["iframe"]
-        starts_at = entry["starts_at"]
+    for e in entries:
+        url = e.get("stream_url")
+        if not url:
+            fail += 1
+            continue
 
-        time_label = format_time_label(starts_at) if starts_at else "LIVE"
-
-        # Playlist display name: "Event Name MM/DD HH:MM AM/PM"
-        display_name = f"{name} {time_label}"
+        time_label   = format_time_label(e["starts_at"]) if e["starts_at"] else "LIVE"
+        display_name = f"{e['name']} {time_label}"
+        logo         = e.get("poster", "")
+        category     = e.get("category", "Sports")
 
         lines.append(
-            f'#EXTINF:-1 tvg-logo="{poster}" group-title="{category}",{display_name}'
+            f'#EXTINF:-1 tvg-logo="{logo}" group-title="{category}",{display_name}'
         )
-        lines.append(iframe)
+        lines.append(f'#EXTVLCOPT:http-referrer={EMBED_REFERER}')
+        lines.append(f'#EXTVLCOPT:http-user-agent={EMBED_USER_AGENT}')
+        lines.append(url)
+        ok += 1
 
-    return "\n".join(lines)
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+
+    print(f"\nPlaylist saved -> {OUTPUT_FILE}  ({ok} streams, {fail} failed/not found)")
 
 
-def main():
-    now = datetime.now(tz=timezone.utc)
-    start_window = now - timedelta(hours=HOURS_BEFORE)
-    end_window = now + timedelta(hours=HOURS_AFTER)
+# ── main ──────────────────────────────────────────────────────────────────────
 
-    print(f"Current UTC time: {now.strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"Fetching streams from {start_window.strftime('%H:%M')} to {end_window.strftime('%H:%M')} UTC")
-    print("-" * 50)
+async def main():
+    now       = datetime.now(tz=timezone.utc)
+    win_start = now - timedelta(hours=HOURS_BEFORE)
+    win_end   = now + timedelta(hours=HOURS_AFTER)
+
+    print(f"UTC now : {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Window  : {win_start.strftime('%H:%M')} -> {win_end.strftime('%H:%M')} UTC")
+    print("-" * 56)
 
     data = get_api_data()
     if not data:
-        print("ERROR: Could not fetch data from any mirror.")
+        print("ERROR: all API mirrors failed.")
         return
 
-    streams_today = []
-    total_skipped = 0
+    # collect candidate streams
+    candidates = []
 
-    for category_group in data.get("streams", []):
-        category = category_group.get("category", "Unknown")
-
-        # Skip 24/7 always-live channels (optional — remove this to include them)
+    for group in data.get("streams", []):
+        category = group.get("category", "Unknown")
         if category == "24/7 Streams":
             continue
 
-        for stream in category_group.get("streams", []):
-            starts_at = stream.get("starts_at", 0)
-            ends_at = stream.get("ends_at", 0)
+        for stream in group.get("streams", []):
+            s_at = stream.get("starts_at", 0)
+            e_at = stream.get("ends_at", 0)
 
-            if is_today_stream(starts_at, ends_at, now, start_window, end_window):
-                streams_today.append({
-                    "category": category,
-                    "name": stream.get("name", "Unknown"),
-                    "tag": stream.get("tag", ""),
-                    "poster": stream.get("poster", ""),
-                    "iframe": stream.get("iframe", ""),
-                    "starts_at": starts_at,
+            if not in_window(s_at, e_at, now, win_start, win_end):
+                continue
+
+            base = dict(
+                category  = category,
+                name      = stream.get("name", "Unknown"),
+                poster    = stream.get("poster", ""),
+                starts_at = s_at,
+            )
+
+            candidates.append({**base, "iframe": stream["iframe"]})
+
+            for sub in stream.get("substreams", []):
+                candidates.append({
+                    **base,
+                    "name"  : f"{stream['name']} ({sub.get('tag','Alt')})",
+                    "iframe": sub["iframe"],
                 })
 
-                # Also add substreams if any
-                for sub in stream.get("substreams", []):
-                    streams_today.append({
-                        "category": category,
-                        "name": f"{stream.get('name')} ({sub.get('tag', 'Alt')})",
-                        "tag": sub.get("tag", ""),
-                        "poster": stream.get("poster", ""),
-                        "iframe": sub.get("iframe", ""),
-                        "starts_at": starts_at,
-                    })
-            else:
-                total_skipped += 1
+    candidates.sort(key=lambda x: x["starts_at"])
+    print(f"Streams in window : {len(candidates)}")
+    print("-" * 56)
 
-    # Sort by start time
-    streams_today.sort(key=lambda x: x["starts_at"])
+    # launch browser and extract m3u8 URLs
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT)
 
-    print(f"Found {len(streams_today)} streams for today's window")
-    print(f"Skipped {total_skipped} streams outside time window")
-    print("-" * 50)
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(headless=True)
 
-    for s in streams_today:
-        time_str = format_time_label(s["starts_at"]) if s["starts_at"] else "LIVE"
-        print(f"  [{s['category']}] {s['name']} @ {time_str}")
+        tasks = [
+            extract_m3u8(semaphore, browser, c["iframe"])
+            for c in candidates
+        ]
 
-    playlist_content = generate_playlist(streams_today)
+        results = await asyncio.gather(*tasks)
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(playlist_content)
+        await browser.close()
 
-    print("-" * 50)
-    print(f"Playlist saved to: {OUTPUT_FILE}")
-    print(f"Total entries: {len(streams_today)}")
+    # attach results and print summary
+    for c, url in zip(candidates, results):
+        c["stream_url"] = url
+        time_s = format_time_label(c["starts_at"]) if c["starts_at"] else "LIVE"
+        status = f"OK  {url[:70]}" if url else "FAIL not found"
+        print(f"  [{c['category']}] {c['name']} @ {time_s}")
+        print(f"    {status}")
+
+    write_playlist(candidates)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
