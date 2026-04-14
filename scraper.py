@@ -306,7 +306,6 @@ def write_playlist(entries):
     for e in entries:
         stream_url = e.get("stream_url")
         player_url = e.get("player_url", "")
-        origin     = get_origin(player_url) if player_url else ""
         logo       = e.get("logo", "")
         category   = e.get("category", "Sports")
         time_label = format_time(e["starts_at"])
@@ -319,12 +318,11 @@ def write_playlist(entries):
             final_url = player_url  # fallback
             fallback += 1
 
+        # No #EXTVLCOPT lines — Exoplayer rejects playlists with
+        # unrecognised tags placed between #EXTINF and the stream URL.
         lines.append(
             f'#EXTINF:-1 tvg-logo="{logo}" group-title="{category}",{name}'
         )
-        lines.append(f'#EXTVLCOPT:http-referrer={player_url}')
-        lines.append(f'#EXTVLCOPT:http-origin={origin}')
-        lines.append(f'#EXTVLCOPT:http-user-agent={EMBED_USER_AGENT}')
         lines.append(final_url)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
