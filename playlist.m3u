@@ -1,9 +1,39 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="" group-title="Racing",Indycar Series
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/mxgp
+#EXTINF:-1 tvg-logo="" group-title="Soccer",Southampton vs Blackburn
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://602.underupturnip.net/mxgp.m3u8
+https://daffodil.underupturnip.net/main.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",Cerro Porteño vs Junior
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/action.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",Grêmio vs Deportivo Riestra
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-6
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://602.shadow-ran.online/usa.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",São Paulo vs O'Higgins
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-7
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.shadow-ran.online/usa.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",Boca Juniors vs Barcelona SC
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/action.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",Palestino vs Torque
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-6
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://602.underupturnip.net/usa.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",Universitario vs Coquimbo Unido
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/action.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5cde762fe5a69ac3132e087b4949355a-thumbnail.jpg" group-title="Baseball",Arizona Diamondbacks vs. Baltimore Orioles 04/14 10:35 PM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -23,7 +53,7 @@ https://602.underupturnip.net/mlb3.m3u8
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://602.underupturnip.net/mlb4.m3u8
+https://602.shadow-ran.online/mlb4.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/06876c1b9d87a407b4e4772ba2eafddb-thumbnail.jpg" group-title="Baseball",Chicago Cubs vs. Philadelphia Phillies 04/14 10:40 PM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-5
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -74,11 +104,6 @@ https://602.underupturnip.net/mlb9.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb10.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/2b1bd2f8f779e56b280690cf5ac98ba7-thumbnail.jpg" group-title="Baseball",Cleveland Guardians vs. St. Louis Cardinals 04/14 11:45 PM
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-11
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://602.underupturnip.net/mlb11.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ef5595e08561ede45c52b36a0b62af76-thumbnail.jpg" group-title="Wrestling",WWE: NXT 04/15 12:00 AM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/wwe-streams
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -129,13 +154,8 @@ https://602.underupturnip.net/nhl9.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb15.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/de38b36d9a1ee016f15261941f375a61-thumbnail.jpg" group-title="Football",Napoli vs. Lazio 04/18 04:00 PM
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-1
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/f8d064bbc4098576ae15a5e44480073c-thumbnail.jpg" group-title="Football",Everton vs. Liverpool 04/19 01:00 PM
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://customer-fpmmd9cdewmb1wz2.cloudflarestream.com/f6f236cb01bdb58bbb446d70f9b9c759/manifest/video.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/33d592f7fbca7409f5b33b91177b77a8-thumbnail.jpg" group-title="Football",Chelsea vs. Manchester United 04/18 07:00 PM
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-3
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://customer-fpmmd9cdewmb1wz2.cloudflarestream.com/cf464ac4daf41050862bb378df16822a/manifest/video.m3u8
+https://602.shadow-ran.online/psg.m3u8
