@@ -1,7 +1,7 @@
 """
 PPV.to M3U Playlist Generator
-Uses Playwright to intercept real .m3u8 URLs.
-Falls back to iframe URL if extraction fails, so playlist is never empty.
+Extracts real .m3u8 URLs by intercepting network requests via Playwright.
+Uses the iframe URL with #player=clappr#autoplay=true appended.
 """
 
 import asyncio
@@ -18,11 +18,11 @@ API_MIRRORS = [
     "https://api.ppv.cx/api/streams",
 ]
 
-OUTPUT_FILE = "playlist.m3u"
-
-# Wide window: everything that started today or ends in the next 48h
-HOURS_BEFORE = 20   # catch streams that started earlier today
-HOURS_AFTER  = 48   # catch upcoming streams up to 2 days ahead
+OUTPUT_FILE    = "playlist.m3u"
+HOURS_BEFORE   = 20
+HOURS_AFTER    = 48
+PLAYER_WAIT_MS = 12_000
+MAX_CONCURRENT = 2   # lower = more stable on GitHub Actions
 
 EMBED_USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -30,12 +30,14 @@ EMBED_USER_AGENT = (
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
-M3U8_PATTERNS  = [".m3u8", "/mono.ts", "/tracks-v1a1"]
-PLAYER_WAIT_MS = 10_000   # 10s — give slow players more time
-MAX_CONCURRENT = 3
+# Match any URL that looks like a video stream
+STREAM_PATTERNS = [
+    r"\.m3u8",
+    r"/tracks-v1a1/",
+    r"/mono\.ts",
+    r"\.ts\.m3u8",
+]
 
-
-# ── helpers ───────────────────────────────────────────────────────────────────
 
 def get_api_data():
     for url in API_MIRRORS:
@@ -62,9 +64,9 @@ def in_window(starts_at, ends_at, now, win_start, win_end):
         return False
     ev_start = datetime.fromtimestamp(starts_at, tz=timezone.utc)
     ev_end   = datetime.fromtimestamp(ends_at, tz=timezone.utc) if ends_at else None
-    starts_in_range = win_start <= ev_start <= win_end
-    currently_live  = ev_start <= now and (ev_end is None or ev_end >= now)
-    return starts_in_range or currently_live
+    in_range = win_start <= ev_start <= win_end
+    is_live  = ev_start <= now and (ev_end is None or ev_end >= now)
+    return in_range or is_live
 
 
 def fix_url(url):
@@ -76,11 +78,25 @@ def get_origin(url):
     return f"{p.scheme}://{p.netloc}"
 
 
-# ── Playwright extraction ─────────────────────────────────────────────────────
+def is_stream_url(url):
+    return any(re.search(p, url, re.I) for p in STREAM_PATTERNS)
+
 
 async def extract_m3u8(semaphore, browser, iframe_url):
+    """
+    Strategy:
+    1. Open embed page, intercept ALL network requests
+    2. Also intercept responses and scan JS for stream URLs
+    3. After page load, try clicking the player to trigger autoplay
+    4. Also evaluate JS to pull stream URL from player config
+    """
     async with semaphore:
         found = []
+        # Append clappr autoplay flags like the original code does
+        load_url = iframe_url
+        if "#" not in load_url:
+            load_url = f"{iframe_url}#player=clappr#autoplay=true"
+
         origin = get_origin(iframe_url)
 
         context = await browser.new_context(
@@ -90,20 +106,100 @@ async def extract_m3u8(semaphore, browser, iframe_url):
                 "Origin":  origin,
             },
         )
+
+        # Block ads/trackers to speed things up
+        await context.route(
+            re.compile(r"(google-analytics|doubleclick|googlesyndication|adservice)"),
+            lambda route: route.abort()
+        )
+
         page = await context.new_page()
 
+        # Intercept all requests
         def on_request(request):
             u = request.url
-            if any(p in u for p in M3U8_PATTERNS) and u not in found:
+            if is_stream_url(u) and u not in found:
+                print(f"    >> intercepted request: {u[:100]}")
                 found.append(u)
 
+        # Also scan response bodies for m3u8 URLs embedded in JS/JSON
+        async def on_response(response):
+            u = response.url
+            ct = response.headers.get("content-type", "")
+            if any(x in ct for x in ["javascript", "json", "text"]):
+                try:
+                    body = await response.text()
+                    # Look for m3u8 URLs inside JS/JSON responses
+                    matches = re.findall(r'https?://[^\s\'"<>]+\.m3u8[^\s\'"<>]*', body)
+                    for m in matches:
+                        if m not in found:
+                            print(f"    >> found in response body: {m[:100]}")
+                            found.append(m)
+                except Exception:
+                    pass
+
         page.on("request", on_request)
+        page.on("response", on_response)
 
         try:
-            await page.goto(iframe_url, wait_until="domcontentloaded", timeout=20_000)
-            await page.wait_for_timeout(PLAYER_WAIT_MS)
+            await page.goto(load_url, wait_until="domcontentloaded", timeout=20_000)
+
+            # Wait for initial JS to run
+            await page.wait_for_timeout(3000)
+
+            # Try clicking anywhere on the player to trigger autoplay
+            try:
+                await page.mouse.click(640, 360)
+                await page.wait_for_timeout(2000)
+            except Exception:
+                pass
+
+            # Try clicking a play button if visible
+            for selector in [
+                "button[class*='play']",
+                "div[class*='play']",
+                ".vjs-big-play-button",
+                ".play-button",
+                "[aria-label*='Play']",
+                "video",
+            ]:
+                try:
+                    el = page.locator(selector).first
+                    if await el.is_visible(timeout=1000):
+                        await el.click()
+                        await page.wait_for_timeout(2000)
+                        break
+                except Exception:
+                    pass
+
+            # Try extracting from JS player objects
+            for js_expr in [
+                # Clappr
+                "window.player && window.player.options && window.player.options.source",
+                "window.player && window.player._options && window.player._options.source",
+                # JWPlayer
+                "window.jwplayer && window.jwplayer().getPlaylistItem && window.jwplayer().getPlaylistItem().file",
+                # VideoJS
+                "window.videojs && document.querySelector('video') && document.querySelector('video').src",
+                # Generic
+                "document.querySelector('video') && document.querySelector('video').src",
+                "document.querySelector('source') && document.querySelector('source').src",
+            ]:
+                try:
+                    result = await page.evaluate(js_expr)
+                    if result and isinstance(result, str) and is_stream_url(result):
+                        if result not in found:
+                            print(f"    >> found via JS eval: {result[:100]}")
+                            found.append(result)
+                        break
+                except Exception:
+                    pass
+
+            # Final wait for any late-loading streams
+            await page.wait_for_timeout(PLAYER_WAIT_MS - 5000)
+
         except Exception as e:
-            print(f"  page error: {e}")
+            print(f"  page error ({iframe_url}): {e}")
         finally:
             try:
                 await page.close()
@@ -113,14 +209,12 @@ async def extract_m3u8(semaphore, browser, iframe_url):
 
         if found:
             result = fix_url(found[0])
-            print(f"  [OK ] m3u8 found: {result[:80]}")
+            print(f"  [OK ] {result[:90]}")
             return result
 
-        print(f"  [---] no m3u8 found, will use iframe fallback")
+        print(f"  [---] no stream found for: {iframe_url}")
         return None
 
-
-# ── playlist writer ───────────────────────────────────────────────────────────
 
 def write_playlist(entries):
     lines = ["#EXTM3U"]
@@ -131,49 +225,38 @@ def write_playlist(entries):
         iframe_url = e.get("iframe", "")
         origin     = get_origin(iframe_url) if iframe_url else ""
 
-        # Always write an entry — use real m3u8 if found, else iframe as fallback
         if stream_url:
             final_url = stream_url
             ok += 1
         else:
-            # Fallback: use the embed iframe URL
-            # Some players (VLC, Kodi) can handle it; OTT may not, but
-            # at least the playlist won't be empty.
-            final_url = iframe_url
+            final_url = iframe_url   # fallback — keeps playlist non-empty
             fallback += 1
 
         time_label   = format_time_label(e["starts_at"]) if e["starts_at"] else "LIVE"
         display_name = f"{e['name']} {time_label}"
-        logo         = e.get("poster", "")
-        category     = e.get("category", "Sports")
 
         lines.append(
-            f'#EXTINF:-1 tvg-logo="{logo}" group-title="{category}",{display_name}'
+            f'#EXTINF:-1 tvg-logo="{e.get("poster","")}" '
+            f'group-title="{e.get("category","Sports")}",{display_name}'
         )
         lines.append(f'#EXTVLCOPT:http-referrer={iframe_url}')
         lines.append(f'#EXTVLCOPT:http-origin={origin}')
         lines.append(f'#EXTVLCOPT:http-user-agent={EMBED_USER_AGENT}')
         lines.append(final_url)
 
-    content = "\n".join(lines)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(content)
+        f.write("\n".join(lines))
 
-    print(f"\nPlaylist saved -> {OUTPUT_FILE}")
-    print(f"  {ok} real m3u8 streams")
-    print(f"  {fallback} iframe fallbacks (no m3u8 intercepted)")
-    print(f"  {ok + fallback} total entries")
+    print(f"\nSaved {OUTPUT_FILE}: {ok} m3u8 + {fallback} iframe fallback = {ok+fallback} total")
 
-
-# ── main ──────────────────────────────────────────────────────────────────────
 
 async def main():
     now       = datetime.now(tz=timezone.utc)
     win_start = now - timedelta(hours=HOURS_BEFORE)
     win_end   = now + timedelta(hours=HOURS_AFTER)
 
-    print(f"UTC now    : {now.strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"Window     : {win_start.strftime('%m/%d %H:%M')} -> {win_end.strftime('%m/%d %H:%M')} UTC")
+    print(f"UTC: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Window: {win_start.strftime('%m/%d %H:%M')} -> {win_end.strftime('%m/%d %H:%M')}")
     print("-" * 60)
 
     data = get_api_data()
@@ -182,19 +265,15 @@ async def main():
         return
 
     candidates = []
-
     for group in data.get("streams", []):
         category = group.get("category", "Unknown")
         if category == "24/7 Streams":
             continue
-
         for stream in group.get("streams", []):
             s_at = stream.get("starts_at", 0)
             e_at = stream.get("ends_at", 0)
-
             if not in_window(s_at, e_at, now, win_start, win_end):
                 continue
-
             base = dict(
                 category  = category,
                 name      = stream.get("name", "Unknown"),
@@ -203,32 +282,31 @@ async def main():
                 iframe    = stream.get("iframe", ""),
             )
             candidates.append(base)
-
             for sub in stream.get("substreams", []):
                 candidates.append({
                     **base,
-                    "name"  : f"{stream['name']} ({sub.get('tag', 'Alt')})",
+                    "name"  : f"{stream['name']} ({sub.get('tag','Alt')})",
                     "iframe": sub.get("iframe", ""),
                 })
 
     candidates.sort(key=lambda x: x["starts_at"])
-    print(f"Streams in window : {len(candidates)}")
+    print(f"Streams in window: {len(candidates)}")
     print("-" * 60)
 
     if not candidates:
-        print("No streams found in window — writing empty playlist.")
         with open(OUTPUT_FILE, "w") as f:
             f.write("#EXTM3U\n")
+        print("No streams found.")
         return
 
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
-
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=True)
-
+        browser = await pw.chromium.launch(
+            headless=True,
+            args=["--no-sandbox", "--disable-setuid-sandbox", "--autoplay-policy=no-user-gesture-required"],
+        )
         tasks   = [extract_m3u8(semaphore, browser, c["iframe"]) for c in candidates]
         results = await asyncio.gather(*tasks)
-
         await browser.close()
 
     for c, url in zip(candidates, results):
