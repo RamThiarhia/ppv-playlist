@@ -4,11 +4,6 @@
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mxgp.m3u8
-#EXTINF:-1 tvg-logo="" group-title="Soccer",Levante vs Getafe
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-2
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://customer-fpmmd9cdewmb1wz2.cloudflarestream.com/fa12ae43c62ef78c16617a4fc91fa03a/manifest/video.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5cde762fe5a69ac3132e087b4949355a-thumbnail.jpg" group-title="Baseball",Arizona Diamondbacks vs. Baltimore Orioles 04/14 10:35 PM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -109,11 +104,21 @@ https://602.underupturnip.net/nhl6.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/nhl7.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/c90943ae0ae22b5c61f3900fee04723f-thumbnail.jpg" group-title="Ice Hockey",Pittsburgh Penguins vs. St. Louis Blues 04/15 01:30 AM
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nhl-streams-8
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://602.underupturnip.net/nhl8.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/d9dacfcea4f64b9895d5d601978d1202-thumbnail.jpg" group-title="Baseball",Seattle Mariners vs. San Diego Padres 04/15 01:40 AM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-13
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb13.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/b9d883f7282acb88b2c6f875c6023ef4-thumbnail.jpg" group-title="Baseball",Texas Rangers vs. Athletics 04/15 01:40 AM
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-14
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://602.underupturnip.net/mlb14.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/e26ecde15227d1854508f719060979be-thumbnail.jpg" group-title="Ice Hockey",Los Angeles Kings vs. Vancouver Canucks 04/15 02:00 AM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nhl-streams-9
 #EXTVLCOPT:http-origin=https://roxiestreams.su
