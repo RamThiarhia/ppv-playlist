@@ -1,14 +1,9 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="" group-title="Fighting",WWE NXT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/wwe-streams
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://602.underupturnip.net/wwe.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Caracas vs Petrolero
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/main.m3u8
+https://daffodil.shadow-ran.online/main.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Libertad vs Rosario Central
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -29,6 +24,16 @@ https://daffodil.underupturnip.net/main.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.underupturnip.net/sao.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",River Plate vs Carabobo
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/beines.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Soccer",Corinthians vs Santa Fe
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-8
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/one.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Millonarios vs Boston River
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -44,42 +49,42 @@ https://daffodil.underupturnip.net/beines.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/xtra.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5cde762fe5a69ac3132e087b4949355a-thumbnail.jpg" group-title="Baseball",Arizona Diamondbacks vs. Baltimore Orioles 04/15 04:35 PM
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5cde762fe5a69ac3132e087b4949355a-thumbnail.jpg" group-title="Baseball",Arizona Diamondbacks vs. Baltimore Orioles 04/16 12:35 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/2b1bd2f8f779e56b280690cf5ac98ba7-thumbnail.jpg" group-title="Baseball",Cleveland Guardians vs. St. Louis Cardinals 04/15 05:15 PM
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/2b1bd2f8f779e56b280690cf5ac98ba7-thumbnail.jpg" group-title="Baseball",Cleveland Guardians vs. St. Louis Cardinals 04/16 01:15 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb2.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/3c8cb5700183b9187fde3113e4dd532b-thumbnail.jpg" group-title="Football",Arsenal vs. Sporting CP 04/15 07:00 PM
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/3c8cb5700183b9187fde3113e4dd532b-thumbnail.jpg" group-title="Football",Arsenal vs. Sporting CP 04/16 03:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/psg.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/d93899862a4855d2d8d2c1efa81f191c-thumbnail.jpg" group-title="Football",Bayern Munich vs. Real Madrid 04/15 07:00 PM
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/d93899862a4855d2d8d2c1efa81f191c-thumbnail.jpg" group-title="Football",Bayern Munich vs. Real Madrid 04/16 03:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-3
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.underupturnip.net/golazo.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/e704b3492ab7994e18e6f6dc64e38e82-thumbnail.jpg" group-title="Baseball",Kansas City Royals vs. Detroit Tigers 04/15 10:40 PM
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/e704b3492ab7994e18e6f6dc64e38e82-thumbnail.jpg" group-title="Baseball",Kansas City Royals vs. Detroit Tigers 04/16 06:40 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb4.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/0e2c3552750bedce9d7ca11a9e091df3-thumbnail.jpg" group-title="Ice Hockey",Dallas Stars vs. Buffalo Sabres 04/15 11:00 PM
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/0e2c3552750bedce9d7ca11a9e091df3-thumbnail.jpg" group-title="Ice Hockey",Dallas Stars vs. Buffalo Sabres 04/16 07:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nhl-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/nhl.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/9629640c58200b49cd0c2fd8a25afa69-thumbnail.jpg" group-title="Basketball",Golden State Warriors vs. LA Clippers 04/16 02:00 AM
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/9629640c58200b49cd0c2fd8a25afa69-thumbnail.jpg" group-title="Basketball",Golden State Warriors vs. LA Clippers 04/16 10:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5ec73bb3bfc558eeb1d105a4bdcc2d4d-thumbnail.jpg" group-title="Football",FC Dallas vs. LA Galaxy 04/19 12:30 AM
+https://daffodil.shadow-ran.online/nba.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5ec73bb3bfc558eeb1d105a4bdcc2d4d-thumbnail.jpg" group-title="Football",FC Dallas vs. LA Galaxy 04/19 08:30 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-9
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
