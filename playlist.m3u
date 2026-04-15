@@ -1,9 +1,4 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/c90943ae0ae22b5c61f3900fee04723f-thumbnail.jpg" group-title="Ice Hockey",Pittsburgh Penguins vs. St. Louis Blues 04/15 01:30 AM
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nhl-streams-8
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://602.underupturnip.net/nhl8.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/d9dacfcea4f64b9895d5d601978d1202-thumbnail.jpg" group-title="Baseball",Seattle Mariners vs. San Diego Padres 04/15 01:40 AM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-13
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -14,6 +9,11 @@ https://602.underupturnip.net/mlb13.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb14.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/9248724ed63b7e4b681fcdba7f6747ab-thumbnail.jpg" group-title="Basketball",Portland Trail Blazers vs. Phoenix Suns 04/15 02:00 AM
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/nba2.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/e26ecde15227d1854508f719060979be-thumbnail.jpg" group-title="Ice Hockey",Los Angeles Kings vs. Vancouver Canucks 04/15 02:00 AM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nhl-streams-9
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -29,6 +29,11 @@ https://602.underupturnip.net/mlb6.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb15.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Basketball",Miami Heat vs Charlotte Hornets
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/nba.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Racing",Indycar Series
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mxgp
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -79,6 +84,11 @@ https://602.underupturnip.net/mlb9.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/mlb10.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Baseball",Cleveland Guardians vs St. Louis Cardinals
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-11
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://602.underupturnip.net/mlb11.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Baseball",Colorado Rockies vs Houston Astros
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-12
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -114,6 +124,11 @@ https://602.underupturnip.net/nhl6.m3u8
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://602.underupturnip.net/nhl7.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Hockey",Pittsburgh Penguins vs St. Louis Blues
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nhl-streams-8
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://602.underupturnip.net/nhl8.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Portsmouth vs Ipswich
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-3
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -128,7 +143,7 @@ https://daffodil.underupturnip.net/main.m3u8
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/beines.m3u8
+https://daffodil.shadow-ran.online/beines.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Grêmio vs Deportivo Riestra
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-6
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -148,17 +163,17 @@ https://daffodil.underupturnip.net/beines.m3u8
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-6
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/tudnus.m3u8
+https://daffodil.shadow-ran.online/tudnus.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Universitario vs Coquimbo Unido
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/beines.m3u8
+https://daffodil.shadow-ran.online/beines.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/926a974de9504125f3b79c6cf6715ccc-thumbnail.jpg" group-title="Football",Vancouver Whitecaps vs. Sporting Kansas City 04/18 02:30 AM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/mlb-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://602.underupturnip.net/mlb2.m3u8
+https://602.shadow-ran.online/mlb2.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/f74bc40214cf1a7ecc7200c268728363-thumbnail.jpg" group-title="Football",New York City FC vs. Charlotte FC 04/18 11:30 PM
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nhl-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
