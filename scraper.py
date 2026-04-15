@@ -21,7 +21,7 @@ from selectolax.parser import HTMLParser
 BASE_URL = "https://roxiestreams.su"
 
 SPORT_PAGES = {
-    "Basketball": urljoin(BASE_URL, "nba"),
+    "Basketball": urljoin(BASE_URL, "nba")
 }
 
 PPV_MIRRORS = [
