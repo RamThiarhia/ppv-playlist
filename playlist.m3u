@@ -1,9 +1,14 @@
 #EXTM3U
+#EXTINF:-1 tvg-logo="" group-title="Fighting",WWE NXT
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/wwe-streams
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://602.underupturnip.net/wwe.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Caracas vs Petrolero
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.shadow-ran.online/main.m3u8
+https://daffodil.underupturnip.net/main.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Libertad vs Rosario Central
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -13,7 +18,7 @@ https://daffodil.underupturnip.net/beines.m3u8
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-6
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.shadow-ran.online/tudnus.m3u8
+https://daffodil.underupturnip.net/tudnus.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Olimpia vs Barracas Central
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
@@ -23,17 +28,7 @@ https://daffodil.underupturnip.net/main.m3u8
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-7
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.shadow-ran.online/sao.m3u8
-#EXTINF:-1 tvg-logo="" group-title="Soccer",River Plate vs Carabobo
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-5
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/beines.m3u8
-#EXTINF:-1 tvg-logo="" group-title="Soccer",Corinthians vs Santa Fe
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-8
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/one.m3u8
+https://daffodil.underupturnip.net/sao.m3u8
 #EXTINF:-1 tvg-logo="" group-title="Soccer",Millonarios vs Boston River
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/soccer-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
