@@ -22,11 +22,6 @@ BASE_URL = "https://roxiestreams.su"
 
 SPORT_PAGES = {
     "Basketball": urljoin(BASE_URL, "nba"),
-    "Racing"    : urljoin(BASE_URL, "motorsports"),
-    "Fighting"  : urljoin(BASE_URL, "fighting"),
-    "Baseball"  : urljoin(BASE_URL, "mlb"),
-    "Hockey"    : urljoin(BASE_URL, "nhl"),
-    "Soccer"    : urljoin(BASE_URL, "soccer"),
 }
 
 PPV_MIRRORS = [
