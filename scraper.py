@@ -7,6 +7,7 @@ NBA M3U Playlist Generator
 """
 
 import asyncio
+import json
 import re
 from datetime import datetime, timezone, timedelta
 from urllib.parse import urljoin, urlparse
@@ -374,6 +375,33 @@ def write_playlist(entries):
     print(f"\nSaved {OUTPUT_FILE}: {ok} streams, {skipped} skipped")
 
 
+# ── Step 6: write schedule for pre-game trigger ───────────────────────────────
+
+def write_schedule(entries, now_utc):
+    """
+    Save upcoming game start times to schedule.json.
+    The scheduler workflow reads this file every 15 minutes and triggers
+    a playlist update 15 minutes before each scheduled game.
+    """
+    upcoming = []
+    for e in entries:
+        starts_at = e.get("starts_at")
+        if starts_at and starts_at > now_utc:
+            upcoming.append({
+                "name": e.get("display_name", e.get("roxie_name", "")),
+                "starts_at_iso": starts_at.isoformat(),
+            })
+
+    with open("schedule.json", "w", encoding="utf-8") as f:
+        json.dump(upcoming, f, indent=2)
+
+    print(f"Saved schedule.json: {len(upcoming)} upcoming game(s)")
+    for g in upcoming:
+        # Show times in PHT for readability in the Actions log
+        dt = datetime.fromisoformat(g["starts_at_iso"])
+        print(f"  - {g['name']} @ {fmt_time_pht(dt)}")
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 async def main():
@@ -389,6 +417,8 @@ async def main():
         print("No NBA events found on roxiestreams.")
         with open(OUTPUT_FILE, "w") as f:
             f.write("#EXTM3U\n")
+        # Write empty schedule so the file always exists
+        write_schedule([], now_utc)
         return
 
     # 2. Get PPV.to NBA streams
@@ -412,6 +442,9 @@ async def main():
 
     # Sort by start time
     roxie_events.sort(key=lambda x: x.get("starts_at") or now_utc)
+
+    # Save schedule.json for pre-game scheduler workflow
+    write_schedule(roxie_events, now_utc)
 
     # 4. Extract stream URLs
     print("=" * 60)
