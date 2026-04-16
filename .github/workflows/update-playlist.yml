@@ -2,13 +2,18 @@ name: Update PPV Playlist
 
 on:
   schedule:
-    - cron: '0 0,6,12,18 * * *'  
+    # PHT = UTC+8. These fixed runs happen at:
+    # 12:00 AM PHT = 16:00 UTC (previous day)
+    # 03:00 AM PHT = 19:00 UTC (previous day)
+    # 06:00 AM PHT = 22:00 UTC (previous day)
+    - cron: '0 16 * * *'
+    - cron: '0 19 * * *'
+    - cron: '0 22 * * *'
   workflow_dispatch:
 
 jobs:
   update-playlist:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,10 +34,10 @@ jobs:
       - name: Run scraper
         run: python scraper.py
 
-      - name: Commit and push updated playlist
+      - name: Commit and push updated playlist + schedule
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add playlist.m3u
+          git add playlist.m3u schedule.json
           git diff --cached --quiet || git commit -m "Update playlist [$(date -u '+%Y-%m-%d %H:%M UTC')]"
           git push
