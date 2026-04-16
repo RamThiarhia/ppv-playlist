@@ -1,11 +1,11 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ccd8e1539ba8809ac64b173efea81bc9-thumbnail.jpg" group-title="Basketball",Orlando Magic vs. Philadelphia 76ers 04/16 07:30 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/nba.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/9629640c58200b49cd0c2fd8a25afa69-thumbnail.jpg" group-title="Basketball",Golden State Warriors vs. LA Clippers 04/16 10:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.underupturnip.net/nba2.m3u8
+#EXTINF:-1 tvg-logo="" group-title="Basketball",Orlando Magic vs 76ers
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/nba.m3u8
