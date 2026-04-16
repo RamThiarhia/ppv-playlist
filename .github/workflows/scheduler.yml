@@ -1,0 +1,110 @@
+name: Pre-Game Scheduler
+
+on:
+  schedule:
+    # Runs every 15 minutes. Lightweight — no pip install, no Playwright.
+    # Just reads schedule.json and fires update-playlist.yml if a game
+    # is starting within the next 15 minutes.
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check-and-trigger:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for upcoming games and trigger playlist update if needed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json
+          import subprocess
+          import sys
+          from datetime import datetime, timezone, timedelta
+          from pathlib import Path
+
+          # ── config ────────────────────────────────────────────────────────
+          TRIGGER_WINDOW_MINUTES = 15
+          PHT = timezone(timedelta(hours=8))
+          REPO = "${{ github.repository }}"
+
+          # ── load schedule.json ────────────────────────────────────────────
+          schedule_file = Path("schedule.json")
+          if not schedule_file.exists():
+              print("No schedule.json found — skipping.")
+              sys.exit(0)
+
+          try:
+              games = json.loads(schedule_file.read_text())
+          except Exception as e:
+              print(f"Could not parse schedule.json: {e}")
+              sys.exit(0)
+
+          if not games:
+              print("schedule.json is empty — no upcoming games.")
+              sys.exit(0)
+
+          # ── check each game ───────────────────────────────────────────────
+          now_utc = datetime.now(tz=timezone.utc)
+          now_pht = now_utc.astimezone(PHT)
+          window  = timedelta(minutes=TRIGGER_WINDOW_MINUTES)
+
+          print(f"UTC: {now_utc.strftime('%Y-%m-%d %H:%M:%S')}")
+          print(f"PHT: {now_pht.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)")
+          print(f"Checking {len(games)} scheduled game(s) "
+                f"(trigger window: {TRIGGER_WINDOW_MINUTES} min)...")
+          print("-" * 50)
+
+          trigger_game = None
+          for game in games:
+              try:
+                  starts_at   = datetime.fromisoformat(game["starts_at_iso"])
+                  starts_pht  = starts_at.astimezone(PHT)
+                  time_until  = starts_at - now_utc
+                  mins_until  = time_until.total_seconds() / 60
+
+                  print(f"  {game['name']}")
+                  print(f"    starts: {starts_pht.strftime('%m/%d %I:%M %p PHT')} "
+                        f"({mins_until:+.1f} min from now)")
+
+                  # Trigger if game is 0–15 minutes away
+                  if timedelta(0) <= time_until <= window:
+                      trigger_game = game
+                      print(f"    --> IN WINDOW — will trigger update!")
+                      break
+                  elif time_until < timedelta(0):
+                      print(f"    --> already started, skipping")
+                  else:
+                      print(f"    --> not yet in window")
+
+              except Exception as e:
+                  print(f"  Error parsing game entry: {e}")
+
+          print("-" * 50)
+
+          # ── trigger if needed ─────────────────────────────────────────────
+          if trigger_game:
+              print(f"\nTriggering playlist update for: {trigger_game['name']}")
+              result = subprocess.run(
+                  [
+                      "gh", "workflow", "run",
+                      "update-playlist.yml",
+                      "--repo", REPO,
+                  ],
+                  capture_output=True,
+                  text=True,
+              )
+              print(result.stdout)
+              if result.returncode != 0:
+                  print(f"ERROR triggering workflow: {result.stderr}")
+                  sys.exit(1)
+              print("Playlist update triggered successfully.")
+          else:
+              print("\nNo games in the trigger window — nothing to do.")
+          EOF
