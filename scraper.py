@@ -1,7 +1,7 @@
 """
-Sports M3U Playlist Generator
-- Events + streams : roxiestreams.su (Clappr player, direct JS extraction)
-- Names/logos/times: PPV.to API (matched by team names)
+NBA M3U Playlist Generator
+- Events + streams : roxiestreams.su/nba
+- Names/logos/times: PPV.to API (matched by sport + time window)
 - Times displayed  : Philippine Time (UTC+8)
 - Headers preserved: Referer, Origin, User-Agent (required by CDN)
 """
@@ -18,11 +18,8 @@ from selectolax.parser import HTMLParser
 
 # ── config ────────────────────────────────────────────────────────────────────
 
-BASE_URL = "https://roxiestreams.su"
-
-SPORT_PAGES = {
-    "Basketball": urljoin(BASE_URL, "nba")
-}
+BASE_URL  = "https://roxiestreams.su"
+NBA_URL   = urljoin(BASE_URL, "nba")
 
 PPV_MIRRORS = [
     "https://api.ppv.to/api/streams",
@@ -35,6 +32,9 @@ PAGE_TIMEOUT   = 20_000  # ms
 
 # Philippine Time = UTC+8
 PHT = timezone(timedelta(hours=8))
+
+# How close two event start times must be to count as a match (minutes)
+TIME_MATCH_WINDOW = 60
 
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -55,100 +55,144 @@ def fix_url(url):
 
 
 def fmt_time_pht(dt):
-    """Convert any datetime to Philippine Time and format it."""
+    """Convert UTC datetime to Philippine Time string."""
     if dt is None:
         return ""
-    dt_pht = dt.astimezone(PHT)
-    return dt_pht.strftime("%m/%d %I:%M %p PHT")
+    return dt.astimezone(PHT).strftime("%m/%d %I:%M %p PHT")
 
 
 def normalize(s):
-    """Lowercase, strip punctuation — for fuzzy matching."""
     return re.sub(r"[^a-z0-9 ]", "", s.lower()).strip()
 
 
-# ── Step 1: scrape roxiestreams event list ────────────────────────────────────
+def slug_to_words(url):
+    """
+    Extract team name words from a roxie URL slug.
+    e.g. /nba/lakers-celtics-2 -> {'lakers', 'celtics'}
+    """
+    path = urlparse(url).path          # /nba/lakers-celtics-2
+    slug = path.rstrip("/").split("/")[-1]  # lakers-celtics-2
+    # Remove trailing numbers and split on dashes
+    slug = re.sub(r"-\d+$", "", slug)
+    return set(slug.lower().split("-")) - {"vs", "at", ""}
+
+
+# ── Step 1: scrape roxiestreams NBA page ──────────────────────────────────────
 
 def get_roxie_events():
     """
-    Fetches each sport page, parses the #eventsTable, returns list of:
-      { sport, roxie_name, link }
+    Scrapes roxiestreams.su/nba event table.
+    Also parses the time column if available.
+    Returns list of { roxie_name, link, roxie_time_str }
     """
-    headers = {"User-Agent": USER_AGENT}
-    events  = []
+    print(f"Scraping {NBA_URL} ...")
+    events = []
 
-    for sport, url in SPORT_PAGES.items():
-        try:
-            print(f"  Scraping {sport}: {url}")
-            r    = requests.get(url, headers=headers, timeout=15)
-            soup = HTMLParser(r.content)
+    try:
+        r    = requests.get(NBA_URL, headers={"User-Agent": USER_AGENT}, timeout=15)
+        soup = HTMLParser(r.content)
 
-            for row in soup.css("table#eventsTable tbody tr"):
-                a = row.css_first("td a")
-                if not a:
-                    continue
-                event_name = a.text(strip=True)
-                href       = a.attributes.get("href", "")
-                if not href:
-                    continue
-                events.append({
-                    "sport"     : sport,
-                    "roxie_name": event_name,
-                    "link"      : urljoin(BASE_URL, href),
-                })
+        for row in soup.css("table#eventsTable tbody tr"):
+            cells = row.css("td")
+            if not cells:
+                continue
 
-        except Exception as e:
-            print(f"  FAIL {sport}: {e}")
+            a = row.css_first("td a")
+            if not a:
+                continue
 
-    print(f"  Total roxie events: {len(events)}")
+            event_name = a.text(strip=True)
+            href       = a.attributes.get("href", "")
+            if not href:
+                continue
+
+            # Try to grab time from any cell that looks like a time
+            time_str = ""
+            for cell in cells:
+                txt = cell.text(strip=True)
+                if re.search(r"\d{1,2}:\d{2}", txt):
+                    time_str = txt
+                    break
+
+            events.append({
+                "roxie_name"    : event_name,
+                "link"          : urljoin(BASE_URL, href),
+                "roxie_time_str": time_str,
+            })
+
+    except Exception as e:
+        print(f"  FAIL: {e}")
+
+    print(f"  Found {len(events)} NBA events on roxie")
     return events
 
 
-# ── Step 2: get PPV.to data (names, logos, times) ────────────────────────────
+# ── Step 2: get PPV.to NBA streams ───────────────────────────────────────────
 
-def get_ppv_data():
+def get_ppv_nba():
     """
-    Returns list of PPV stream dicts:
-      name, poster, starts_at (datetime UTC-aware), category
+    Fetches PPV.to and returns only Basketball/NBA streams.
+    Each item: { name, poster, starts_at (UTC datetime) }
     """
     for url in PPV_MIRRORS:
         try:
             print(f"Fetching PPV.to from {url} ...")
             r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=15)
-            if r.status_code == 200 and r.json().get("success"):
-                streams = []
-                for group in r.json().get("streams", []):
-                    cat = group.get("category", "Sports")
-                    if cat == "24/7 Streams":
+            if r.status_code != 200:
+                continue
+            data = r.json()
+            if not data.get("success"):
+                continue
+
+            nba_streams = []
+            for group in data.get("streams", []):
+                cat = group.get("category", "")
+                # PPV uses "Basketball" as category for NBA
+                if cat.lower() not in ("basketball", "nba"):
+                    continue
+                for s in group.get("streams", []):
+                    ts = s.get("starts_at", 0)
+                    if not ts:
                         continue
-                    for s in group.get("streams", []):
-                        ts = s.get("starts_at", 0)
-                        streams.append({
-                            "category" : cat,
-                            "name"     : s.get("name", ""),
-                            "poster"   : s.get("poster", ""),
-                            # Store as UTC-aware datetime
-                            "starts_at": datetime.fromtimestamp(ts, tz=timezone.utc) if ts else None,
-                        })
-                print(f"  {len(streams)} PPV streams loaded")
-                return streams
+                    nba_streams.append({
+                        "name"    : s.get("name", ""),
+                        "poster"  : s.get("poster", ""),
+                        "starts_at": datetime.fromtimestamp(ts, tz=timezone.utc),
+                    })
+
+            print(f"  {len(nba_streams)} NBA streams from PPV.to")
+            return nba_streams
+
         except Exception as e:
-            print(f"  FAIL: {e}")
+            print(f"  FAIL {url}: {e}")
+
     return []
 
 
-def match_ppv(roxie_name, ppv_streams):
+# ── Step 3: match roxie event → PPV stream ───────────────────────────────────
+
+def match_event_to_ppv(roxie_ev, ppv_streams):
     """
-    Fuzzy-match a roxie event name against PPV.to stream names.
-    Returns the best matching PPV stream dict, or None.
+    Three strategies, in order:
+
+    1. Name match  — word overlap between roxie name and PPV name (≥50%)
+    2. Slug match  — team words from URL slug found in PPV name
+    3. Time match  — PPV event starts within TIME_MATCH_WINDOW minutes
+                     of any time hints we can extract from roxie
+
+    Returns best PPV stream dict or None.
     """
+    roxie_name  = roxie_ev.get("roxie_name", "")
+    roxie_link  = roxie_ev.get("link", "")
+
+    # ── Strategy 1: name word overlap ────────────────────────────────────────
     rwords = set(normalize(roxie_name).split())
 
     best_score  = 0
     best_stream = None
 
     for s in ppv_streams:
-        pwords = set(normalize(s["name"]).split())
+        pwords  = set(normalize(s["name"]).split())
         if not rwords or not pwords:
             continue
         overlap = len(rwords & pwords) / max(len(rwords), len(pwords))
@@ -156,16 +200,74 @@ def match_ppv(roxie_name, ppv_streams):
             best_score  = overlap
             best_stream = s
 
-    return best_stream if best_score >= 0.5 else None
+    if best_score >= 0.5:
+        print(f"    [name match {best_score:.0%}] {roxie_name} -> {best_stream['name']}")
+        return best_stream
+
+    # ── Strategy 2: slug word match ───────────────────────────────────────────
+    slug_words = slug_to_words(roxie_link)
+
+    if slug_words:
+        best_slug_score  = 0
+        best_slug_stream = None
+
+        for s in ppv_streams:
+            pwords  = set(normalize(s["name"]).split())
+            overlap = len(slug_words & pwords) / max(len(slug_words), len(pwords)) if pwords else 0
+            if overlap > best_slug_score:
+                best_slug_score  = overlap
+                best_slug_stream = s
+
+        if best_slug_score >= 0.4:
+            print(f"    [slug match {best_slug_score:.0%}] {slug_words} -> {best_slug_stream['name']}")
+            return best_slug_stream
+
+    # ── Strategy 3: time window match ────────────────────────────────────────
+    # Parse time string from roxie (e.g. "7:30 PM ET")
+    # We don't know the date, so we try today and tomorrow in US Eastern (UTC-4/5)
+    time_str = roxie_ev.get("roxie_time_str", "")
+    time_match = re.search(r"(\d{1,2}):(\d{2})\s*(AM|PM)", time_str, re.I)
+
+    if time_match:
+        hour   = int(time_match.group(1))
+        minute = int(time_match.group(2))
+        ampm   = time_match.group(3).upper()
+
+        if ampm == "PM" and hour != 12:
+            hour += 12
+        elif ampm == "AM" and hour == 12:
+            hour = 0
+
+        # US Eastern = UTC-4 (EDT, used during NBA season)
+        ET = timezone(timedelta(hours=-4))
+        now_et = datetime.now(tz=ET)
+
+        candidates = []
+        for day_offset in (0, 1, -1):
+            try:
+                dt_et  = now_et.replace(
+                    hour=hour, minute=minute, second=0, microsecond=0
+                ) + timedelta(days=day_offset)
+                dt_utc = dt_et.astimezone(timezone.utc)
+                candidates.append(dt_utc)
+            except Exception:
+                pass
+
+        window = timedelta(minutes=TIME_MATCH_WINDOW)
+        for s in ppv_streams:
+            ppv_start = s["starts_at"]
+            for candidate in candidates:
+                if abs(ppv_start - candidate) <= window:
+                    print(f"    [time match] {time_str} -> {s['name']} @ {fmt_time_pht(ppv_start)}")
+                    return s
+
+    print(f"    [no match] {roxie_name} (slug: {slug_to_words(roxie_link)})")
+    return None
 
 
-# ── Step 3: Playwright — extract Clappr stream URL ───────────────────────────
+# ── Step 4: Playwright — extract Clappr stream URL ───────────────────────────
 
 async def extract_stream(semaphore, browser, event):
-    """
-    Opens the roxie event page, clicks the stream button,
-    waits for clapprPlayer to initialise, reads its source.
-    """
     async with semaphore:
         link   = event["link"]
         origin = get_origin(link)
@@ -187,7 +289,7 @@ async def extract_stream(semaphore, browser, event):
                 print(f"  [{event['roxie_name']}] HTTP {resp.status if resp else 'none'}")
                 return None
 
-            # Click the stream button (same as original roxie scraper)
+            # Click stream button (original roxie scraper logic)
             try:
                 btn = page.locator("button.streambutton").first
                 await btn.click(force=True, click_count=2, timeout=3_000)
@@ -197,7 +299,7 @@ async def extract_stream(semaphore, browser, event):
                 except Exception:
                     pass
 
-            # Wait for clapprPlayer (same as original roxie scraper)
+            # Wait for clapprPlayer (original roxie scraper logic)
             try:
                 await page.wait_for_function(
                     "() => typeof clapprPlayer !== 'undefined'",
@@ -241,12 +343,12 @@ async def extract_stream(semaphore, browser, event):
         return stream_url
 
 
-# ── Step 4: write playlist ────────────────────────────────────────────────────
+# ── Step 5: write playlist ────────────────────────────────────────────────────
 
 def write_playlist(entries):
-    lines    = ["#EXTM3U"]
-    ok       = 0
-    skipped  = 0
+    lines   = ["#EXTM3U"]
+    ok      = 0
+    skipped = 0
 
     for e in entries:
         url = e.get("stream_url")
@@ -257,10 +359,9 @@ def write_playlist(entries):
         link   = e.get("link", "")
         origin = get_origin(link) if link else ""
         logo   = e.get("logo", "")
-        cat    = e.get("category", "Sports")
         name   = e.get("display_name", e.get("roxie_name", "Unknown"))
 
-        lines.append(f'#EXTINF:-1 tvg-logo="{logo}" group-title="{cat}",{name}')
+        lines.append(f'#EXTINF:-1 tvg-logo="{logo}" group-title="NBA",{name}')
         lines.append(f'#EXTVLCOPT:http-referrer={link}')
         lines.append(f'#EXTVLCOPT:http-origin={origin}')
         lines.append(f'#EXTVLCOPT:http-user-agent={USER_AGENT}')
@@ -282,40 +383,37 @@ async def main():
     print(f"PHT: {now_pht.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)")
     print("=" * 60)
 
-    # 1. Scrape roxiestreams for events
-    print("Scraping roxiestreams.su ...")
+    # 1. Scrape roxie NBA events
     roxie_events = get_roxie_events()
     if not roxie_events:
-        print("No events found on roxiestreams.")
+        print("No NBA events found on roxiestreams.")
         with open(OUTPUT_FILE, "w") as f:
             f.write("#EXTM3U\n")
         return
 
-    # 2. Get PPV.to data for names/logos/times
-    ppv_streams = get_ppv_data()
+    # 2. Get PPV.to NBA streams
+    ppv_streams = get_ppv_nba()
 
-    # 3. Match each roxie event to PPV.to and build display name in PHT
+    # 3. Match each roxie event to a PPV stream
+    print("-" * 60)
+    print("Matching events to PPV.to ...")
     for ev in roxie_events:
-        ppv = match_ppv(ev["roxie_name"], ppv_streams)
+        ppv = match_event_to_ppv(ev, ppv_streams)
         if ppv:
-            # Convert PPV start time to Philippine Time for display
-            time_pht       = fmt_time_pht(ppv.get("starts_at"))
+            time_pht           = fmt_time_pht(ppv.get("starts_at"))
             ev["display_name"] = f"{ppv['name']} {time_pht}".strip()
             ev["logo"]         = ppv.get("poster", "")
-            ev["category"]     = ppv.get("category", ev["sport"])
-            ev["starts_at"]    = ppv.get("starts_at")  # keep UTC for sorting
+            ev["starts_at"]    = ppv.get("starts_at")
         else:
-            # No PPV match — use roxie name, no time available
+            # No match — use roxie name, no logo, no time
             ev["display_name"] = ev["roxie_name"]
             ev["logo"]         = ""
-            ev["category"]     = ev["sport"]
             ev["starts_at"]    = now_utc
-            print(f"  [no PPV match] {ev['roxie_name']}")
 
-    # Sort by start time (UTC internally, displayed as PHT)
+    # Sort by start time
     roxie_events.sort(key=lambda x: x.get("starts_at") or now_utc)
 
-    # 4. Extract stream URLs via Playwright
+    # 4. Extract stream URLs
     print("=" * 60)
     print(f"Extracting streams for {len(roxie_events)} events ...")
     print("-" * 60)
