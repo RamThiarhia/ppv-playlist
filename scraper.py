@@ -71,9 +71,8 @@ def slug_to_words(url):
     Extract team name words from a roxie URL slug.
     e.g. /nba/lakers-celtics-2 -> {'lakers', 'celtics'}
     """
-    path = urlparse(url).path          # /nba/lakers-celtics-2
-    slug = path.rstrip("/").split("/")[-1]  # lakers-celtics-2
-    # Remove trailing numbers and split on dashes
+    path = urlparse(url).path
+    slug = path.rstrip("/").split("/")[-1]
     slug = re.sub(r"-\d+$", "", slug)
     return set(slug.lower().split("-")) - {"vs", "at", ""}
 
@@ -83,7 +82,6 @@ def slug_to_words(url):
 def get_roxie_events():
     """
     Scrapes roxiestreams.su/nba event table.
-    Also parses the time column if available.
     Returns list of { roxie_name, link, roxie_time_str }
     """
     print(f"Scraping {NBA_URL} ...")
@@ -107,7 +105,6 @@ def get_roxie_events():
             if not href:
                 continue
 
-            # Try to grab time from any cell that looks like a time
             time_str = ""
             for cell in cells:
                 txt = cell.text(strip=True)
@@ -134,21 +131,24 @@ def get_ppv_nba():
     """
     Fetches PPV.to and returns only Basketball/NBA streams.
     Each item: { name, poster, starts_at (UTC datetime) }
+    Returns None if the API itself failed (network error / bad response).
+    Returns empty list [] if API is fine but no NBA games scheduled.
     """
     for url in PPV_MIRRORS:
         try:
             print(f"Fetching PPV.to from {url} ...")
             r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=15)
             if r.status_code != 200:
+                print(f"  HTTP {r.status_code} — trying next mirror ...")
                 continue
             data = r.json()
             if not data.get("success"):
+                print(f"  API returned success=false — trying next mirror ...")
                 continue
 
             nba_streams = []
             for group in data.get("streams", []):
                 cat = group.get("category", "")
-                # PPV uses "Basketball" as category for NBA
                 if cat.lower() not in ("basketball", "nba"):
                     continue
                 for s in group.get("streams", []):
@@ -156,18 +156,21 @@ def get_ppv_nba():
                     if not ts:
                         continue
                     nba_streams.append({
-                        "name"    : s.get("name", ""),
-                        "poster"  : s.get("poster", ""),
+                        "name"     : s.get("name", ""),
+                        "poster"   : s.get("poster", ""),
                         "starts_at": datetime.fromtimestamp(ts, tz=timezone.utc),
                     })
 
-            print(f"  {len(nba_streams)} NBA streams from PPV.to")
+            # API responded successfully — return whatever it gave us (even empty)
+            print(f"  {len(nba_streams)} NBA/Basketball stream(s) from PPV.to")
             return nba_streams
 
         except Exception as e:
             print(f"  FAIL {url}: {e}")
 
-    return []
+    # All mirrors failed — return None so caller knows it was a network issue
+    print("  All PPV mirrors failed.")
+    return None
 
 
 # ── Step 3: match roxie event → PPV stream ───────────────────────────────────
@@ -176,15 +179,14 @@ def match_event_to_ppv(roxie_ev, ppv_streams):
     """
     Three strategies, in order:
 
-    1. Name match  — word overlap between roxie name and PPV name (≥50%)
+    1. Name match  — word overlap between roxie name and PPV name (>=50%)
     2. Slug match  — team words from URL slug found in PPV name
     3. Time match  — PPV event starts within TIME_MATCH_WINDOW minutes
-                     of any time hints we can extract from roxie
 
     Returns best PPV stream dict or None.
     """
-    roxie_name  = roxie_ev.get("roxie_name", "")
-    roxie_link  = roxie_ev.get("link", "")
+    roxie_name = roxie_ev.get("roxie_name", "")
+    roxie_link = roxie_ev.get("link", "")
 
     # ── Strategy 1: name word overlap ────────────────────────────────────────
     rwords = set(normalize(roxie_name).split())
@@ -224,9 +226,7 @@ def match_event_to_ppv(roxie_ev, ppv_streams):
             return best_slug_stream
 
     # ── Strategy 3: time window match ────────────────────────────────────────
-    # Parse time string from roxie (e.g. "7:30 PM ET")
-    # We don't know the date, so we try today and tomorrow in US Eastern (UTC-4/5)
-    time_str = roxie_ev.get("roxie_time_str", "")
+    time_str   = roxie_ev.get("roxie_time_str", "")
     time_match = re.search(r"(\d{1,2}):(\d{2})\s*(AM|PM)", time_str, re.I)
 
     if time_match:
@@ -239,8 +239,7 @@ def match_event_to_ppv(roxie_ev, ppv_streams):
         elif ampm == "AM" and hour == 12:
             hour = 0
 
-        # US Eastern = UTC-4 (EDT, used during NBA season)
-        ET = timezone(timedelta(hours=-4))
+        ET     = timezone(timedelta(hours=-4))
         now_et = datetime.now(tz=ET)
 
         candidates = []
@@ -249,8 +248,7 @@ def match_event_to_ppv(roxie_ev, ppv_streams):
                 dt_et  = now_et.replace(
                     hour=hour, minute=minute, second=0, microsecond=0
                 ) + timedelta(days=day_offset)
-                dt_utc = dt_et.astimezone(timezone.utc)
-                candidates.append(dt_utc)
+                candidates.append(dt_et.astimezone(timezone.utc))
             except Exception:
                 pass
 
@@ -290,7 +288,6 @@ async def extract_stream(semaphore, browser, event):
                 print(f"  [{event['roxie_name']}] HTTP {resp.status if resp else 'none'}")
                 return None
 
-            # Click stream button (original roxie scraper logic)
             try:
                 btn = page.locator("button.streambutton").first
                 await btn.click(force=True, click_count=2, timeout=3_000)
@@ -300,7 +297,6 @@ async def extract_stream(semaphore, browser, event):
                 except Exception:
                     pass
 
-            # Wait for clapprPlayer (original roxie scraper logic)
             try:
                 await page.wait_for_function(
                     "() => typeof clapprPlayer !== 'undefined'",
@@ -310,7 +306,6 @@ async def extract_stream(semaphore, browser, event):
             except PWTimeoutError:
                 pass
 
-            # Fallback: try other player objects
             if not stream_url:
                 for expr in [
                     "window.player?.options?.source",
@@ -380,7 +375,7 @@ def write_playlist(entries):
 def write_schedule(entries, now_utc):
     """
     Save upcoming game start times to schedule.json.
-    The scheduler workflow reads this file every 15 minutes and triggers
+    The scheduler workflow reads this every 15 minutes and triggers
     a playlist update 15 minutes before each scheduled game.
     """
     upcoming = []
@@ -388,7 +383,7 @@ def write_schedule(entries, now_utc):
         starts_at = e.get("starts_at")
         if starts_at and starts_at > now_utc:
             upcoming.append({
-                "name": e.get("display_name", e.get("roxie_name", "")),
+                "name"         : e.get("display_name", e.get("roxie_name", "")),
                 "starts_at_iso": starts_at.isoformat(),
             })
 
@@ -397,7 +392,6 @@ def write_schedule(entries, now_utc):
 
     print(f"Saved schedule.json: {len(upcoming)} upcoming game(s)")
     for g in upcoming:
-        # Show times in PHT for readability in the Actions log
         dt = datetime.fromisoformat(g["starts_at_iso"])
         print(f"  - {g['name']} @ {fmt_time_pht(dt)}")
 
@@ -413,20 +407,36 @@ async def main():
 
     # 1. Scrape roxie NBA events
     roxie_events = get_roxie_events()
-    if not roxie_events:
-        print("No NBA events found on roxiestreams.")
-        with open(OUTPUT_FILE, "w") as f:
-            f.write("#EXTM3U\n")
-        # Write empty schedule so the file always exists
-        write_schedule([], now_utc)
-        return
 
     # 2. Get PPV.to NBA streams
     ppv_streams = get_ppv_nba()
 
+    # ── GUARD: PPV has no NBA games scheduled today ───────────────────────────
+    # ppv_streams is None  → all mirrors failed (network issue, skip to be safe)
+    # ppv_streams is []    → API is up but no NBA games today → write empty files
+    if ppv_streams is None:
+        print("\nCould not reach any PPV mirror — keeping existing playlist unchanged.")
+        return
+
+    if len(ppv_streams) == 0:
+        print("\nPPV reports NO NBA/Basketball games scheduled — writing empty playlist.")
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write("#EXTM3U\n")
+        write_schedule([], now_utc)
+        return
+
+    # ── GUARD: nothing on roxie either ───────────────────────────────────────
+    if not roxie_events:
+        print("\nNo events found on roxiestreams — writing empty playlist.")
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write("#EXTM3U\n")
+        write_schedule([], now_utc)
+        return
+
     # 3. Match each roxie event to a PPV stream
     print("-" * 60)
     print("Matching events to PPV.to ...")
+    matched_events = []
     for ev in roxie_events:
         ppv = match_event_to_ppv(ev, ppv_streams)
         if ppv:
@@ -434,21 +444,27 @@ async def main():
             ev["display_name"] = f"{ppv['name']} {time_pht}".strip()
             ev["logo"]         = ppv.get("poster", "")
             ev["starts_at"]    = ppv.get("starts_at")
+            matched_events.append(ev)
         else:
-            # No match — use roxie name, no logo, no time
-            ev["display_name"] = ev["roxie_name"]
-            ev["logo"]         = ""
-            ev["starts_at"]    = now_utc
+            # Roxie event has no matching PPV game — skip it entirely
+            print(f"    [skipped] {ev['roxie_name']} — no PPV match, ignoring")
+
+    if not matched_events:
+        print("\nNo roxie events matched any PPV game — writing empty playlist.")
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write("#EXTM3U\n")
+        write_schedule([], now_utc)
+        return
 
     # Sort by start time
-    roxie_events.sort(key=lambda x: x.get("starts_at") or now_utc)
+    matched_events.sort(key=lambda x: x.get("starts_at") or now_utc)
 
     # Save schedule.json for pre-game scheduler workflow
-    write_schedule(roxie_events, now_utc)
+    write_schedule(matched_events, now_utc)
 
-    # 4. Extract stream URLs
+    # 4. Extract stream URLs (only for matched events)
     print("=" * 60)
-    print(f"Extracting streams for {len(roxie_events)} events ...")
+    print(f"Extracting streams for {len(matched_events)} matched event(s) ...")
     print("-" * 60)
 
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
@@ -461,15 +477,15 @@ async def main():
                 "--autoplay-policy=no-user-gesture-required",
             ],
         )
-        tasks   = [extract_stream(semaphore, browser, ev) for ev in roxie_events]
+        tasks   = [extract_stream(semaphore, browser, ev) for ev in matched_events]
         results = await asyncio.gather(*tasks)
         await browser.close()
 
-    for ev, url in zip(roxie_events, results):
+    for ev, url in zip(matched_events, results):
         ev["stream_url"] = url
 
     # 5. Write playlist
-    write_playlist(roxie_events)
+    write_playlist(matched_events)
 
 
 if __name__ == "__main__":
