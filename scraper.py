@@ -9,7 +9,6 @@ NBA M3U Playlist Generator
 import asyncio
 import json
 import re
-import subprocess
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -39,17 +38,75 @@ PHT = timezone(timedelta(hours=8))
 # How close two event start times must be to count as a match (minutes)
 TIME_MATCH_WINDOW = 60
 
-# How many minutes before game start to trigger the pre-game playlist update
-TRIGGER_MINUTES_BEFORE = 50
-
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
-# Path to the scheduler workflow — rewritten after every scrape
-SCHEDULER_YML = Path(".github/workflows/scheduler.yml")
+# ── NBA team abbreviation → keyword map ───────────────────────────────────────
+# Expands short names/abbreviations that roxie uses into words that PPV uses.
+# Keys are lowercased. Values are extra words added to the roxie word set.
+ABBREV_MAP = {
+    "okc"       : {"oklahoma", "thunder"},
+    "gs"        : {"golden", "warriors"},
+    "la"        : {"angeles", "clippers", "lakers"},
+    "lac"       : {"clippers", "angeles"},
+    "lal"       : {"lakers", "angeles"},
+    "ny"        : {"new", "york", "knicks"},
+    "nyk"       : {"new", "york", "knicks"},
+    "no"        : {"new", "orleans", "pelicans"},
+    "nop"       : {"new", "orleans", "pelicans"},
+    "sa"        : {"san", "antonio", "spurs"},
+    "sas"       : {"san", "antonio", "spurs"},
+    "sf"        : {"golden", "warriors"},
+    "phx"       : {"phoenix", "suns"},
+    "phi"       : {"philadelphia", "76ers", "sixers"},
+    "mil"       : {"milwaukee", "bucks"},
+    "mem"       : {"memphis", "grizzlies"},
+    "ind"       : {"indiana", "pacers"},
+    "cha"       : {"charlotte", "hornets"},
+    "cle"       : {"cleveland", "cavaliers"},
+    "det"       : {"detroit", "pistons"},
+    "tor"       : {"toronto", "raptors"},
+    "orl"       : {"orlando", "magic"},
+    "was"       : {"washington", "wizards"},
+    "atl"       : {"atlanta", "hawks"},
+    "mia"       : {"miami", "heat"},
+    "bkn"       : {"brooklyn", "nets"},
+    "bos"       : {"boston", "celtics"},
+    "chi"       : {"chicago", "bulls"},
+    "dal"       : {"dallas", "mavericks"},
+    "den"       : {"denver", "nuggets"},
+    "hou"       : {"houston", "rockets"},
+    "lac"       : {"clippers"},
+    "min"       : {"minnesota", "timberwolves"},
+    "por"       : {"portland", "trail", "blazers"},
+    "sac"       : {"sacramento", "kings"},
+    "uta"       : {"utah", "jazz"},
+    "76ers"     : {"philadelphia", "sixers"},
+    "sixers"    : {"philadelphia", "76ers"},
+    "blazers"   : {"portland", "trail"},
+    "wolves"    : {"minnesota", "timberwolves"},
+    "mavs"      : {"dallas", "mavericks"},
+    "cavs"      : {"cleveland", "cavaliers"},
+    "knicks"    : {"new", "york"},
+    "nets"      : {"brooklyn"},
+    "spurs"     : {"san", "antonio"},
+    "pelicans"  : {"new", "orleans"},
+    "thunder"   : {"oklahoma", "city"},
+    "warriors"  : {"golden", "state"},
+    "clippers"  : {"los", "angeles"},
+    "lakers"    : {"los", "angeles"},
+    "nuggets"   : {"denver"},
+    "timberwolves": {"minnesota"},
+}
+
+# Words to always strip before matching (they add noise, not signal)
+NOISE_WORDS = {
+    "vs", "at", "the", "nba", "game", "basketball",
+    "live", "stream", "watch", "online",
+}
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -64,7 +121,6 @@ def fix_url(url):
 
 
 def fmt_time_pht(dt):
-    """Convert UTC datetime to Philippine Time string."""
     if dt is None:
         return ""
     return dt.astimezone(PHT).strftime("%m/%d %I:%M %p PHT")
@@ -72,6 +128,24 @@ def fmt_time_pht(dt):
 
 def normalize(s):
     return re.sub(r"[^a-z0-9 ]", "", s.lower()).strip()
+
+
+def expand_words(words):
+    """
+    Expand a word set using ABBREV_MAP so abbreviations match full names.
+    e.g. {'okc', 'lakers'} → {'okc', 'oklahoma', 'thunder', 'lakers', 'los', 'angeles'}
+    """
+    expanded = set(words)
+    for w in words:
+        if w in ABBREV_MAP:
+            expanded |= ABBREV_MAP[w]
+    return expanded - NOISE_WORDS
+
+
+def name_to_words(name):
+    """Normalize a name string into a clean, expanded word set."""
+    words = set(normalize(name).split()) - NOISE_WORDS
+    return expand_words(words)
 
 
 def slug_to_words(url):
@@ -82,16 +156,27 @@ def slug_to_words(url):
     path = urlparse(url).path
     slug = path.rstrip("/").split("/")[-1]
     slug = re.sub(r"-\d+$", "", slug)
-    return set(slug.lower().split("-")) - {"vs", "at", ""}
+    words = set(slug.lower().split("-")) - NOISE_WORDS - {""}
+    return expand_words(words)
+
+
+def match_score(rwords, pwords):
+    """
+    Score overlap between two word sets.
+    Uses the SMALLER set as denominator so that long PPV city names
+    don't dilute the score when roxie uses short team names.
+    e.g. {'lakers'} vs {'los','angeles','lakers','vs','thunder','oklahoma','city'}
+         old: 1/7 = 14%  →  new: 1/1 = 100%
+    """
+    if not rwords or not pwords:
+        return 0.0
+    common = rwords & pwords
+    return len(common) / min(len(rwords), len(pwords))
 
 
 # ── Step 1: scrape roxiestreams NBA page ──────────────────────────────────────
 
 def get_roxie_events():
-    """
-    Scrapes roxiestreams.su/nba event table.
-    Returns list of { roxie_name, link, roxie_time_str }
-    """
     print(f"Scraping {NBA_URL} ...")
     events = []
 
@@ -137,10 +222,8 @@ def get_roxie_events():
 
 def get_ppv_nba():
     """
-    Fetches PPV.to and returns only Basketball/NBA streams.
-    Each item: { name, poster, starts_at (UTC datetime) }
-    Returns None if the API itself failed (network error / bad response).
-    Returns empty list [] if API is fine but no NBA games scheduled.
+    Fetches PPV.to streams.
+    Returns None on network failure, [] if API up but no NBA games.
     """
     for url in PPV_MIRRORS:
         try:
@@ -183,49 +266,53 @@ def get_ppv_nba():
 
 def match_event_to_ppv(roxie_ev, ppv_streams):
     """
-    Three strategies, in order:
-    1. Name match  — word overlap between roxie name and PPV name (>=50%)
-    2. Slug match  — team words from URL slug found in PPV name
-    3. Time match  — PPV event starts within TIME_MATCH_WINDOW minutes
+    Four strategies, in order of confidence:
+
+    1. Name match  — expanded word overlap between roxie name and PPV name
+                     uses min-set denominator so short names aren't penalised
+    2. Slug match  — team words from URL slug matched against PPV name
+    3. Time match  — PPV event starts within TIME_MATCH_WINDOW minutes of roxie time
+    4. Fallback    — if only ONE PPV game is available, assign it directly
+                     (common on single-game days, avoids false negatives)
+
     Returns best PPV stream dict or None.
     """
     roxie_name = roxie_ev.get("roxie_name", "")
     roxie_link = roxie_ev.get("link", "")
 
-    # ── Strategy 1: name word overlap ────────────────────────────────────────
-    rwords = set(normalize(roxie_name).split())
-    best_score  = 0
+    rwords = name_to_words(roxie_name)
+
+    # ── Strategy 1: name word overlap (expanded, min-denominator) ────────────
+    best_score  = 0.0
     best_stream = None
 
     for s in ppv_streams:
-        pwords  = set(normalize(s["name"]).split())
-        if not rwords or not pwords:
-            continue
-        overlap = len(rwords & pwords) / max(len(rwords), len(pwords))
-        if overlap > best_score:
-            best_score  = overlap
+        pwords  = name_to_words(s["name"])
+        score   = match_score(rwords, pwords)
+        if score > best_score:
+            best_score  = score
             best_stream = s
 
     if best_score >= 0.5:
-        print(f"    [name match {best_score:.0%}] {roxie_name} -> {best_stream['name']}")
+        print(f"    [name {best_score:.0%}] '{roxie_name}' → '{best_stream['name']}'")
         return best_stream
 
     # ── Strategy 2: slug word match ───────────────────────────────────────────
     slug_words = slug_to_words(roxie_link)
 
     if slug_words:
-        best_slug_score  = 0
+        best_slug_score  = 0.0
         best_slug_stream = None
 
         for s in ppv_streams:
-            pwords  = set(normalize(s["name"]).split())
-            overlap = len(slug_words & pwords) / max(len(slug_words), len(pwords)) if pwords else 0
-            if overlap > best_slug_score:
-                best_slug_score  = overlap
+            pwords = name_to_words(s["name"])
+            score  = match_score(slug_words, pwords)
+            if score > best_slug_score:
+                best_slug_score  = score
                 best_slug_stream = s
 
         if best_slug_score >= 0.4:
-            print(f"    [slug match {best_slug_score:.0%}] {slug_words} -> {best_slug_stream['name']}")
+            print(f"    [slug {best_slug_score:.0%}] {slug_words} → '{best_slug_stream['name']}'")
             return best_slug_stream
 
     # ── Strategy 3: time window match ────────────────────────────────────────
@@ -260,14 +347,21 @@ def match_event_to_ppv(roxie_ev, ppv_streams):
             ppv_start = s["starts_at"]
             for candidate in candidates:
                 if abs(ppv_start - candidate) <= window:
-                    print(f"    [time match] {time_str} -> {s['name']} @ {fmt_time_pht(ppv_start)}")
+                    print(f"    [time] '{roxie_name}' @ {time_str} → '{s['name']}' @ {fmt_time_pht(ppv_start)}")
                     return s
 
-    print(f"    [no match] {roxie_name} (slug: {slug_to_words(roxie_link)})")
+    # ── Strategy 4: single-game fallback ─────────────────────────────────────
+    # If only one PPV game is available today there is no ambiguity — it must
+    # be this game. Assign it directly rather than dropping the event.
+    if len(ppv_streams) == 1:
+        print(f"    [fallback] '{roxie_name}' → '{ppv_streams[0]['name']}' (only game available)")
+        return ppv_streams[0]
+
+    print(f"    [no match] '{roxie_name}' — tried name/slug/time, all failed")
     return None
 
 
-# ── Step 4: Playwright — extract Clappr stream URL ───────────────────────────
+# ── Step 4: Playwright — extract stream URL ───────────────────────────────────
 
 async def extract_stream(semaphore, browser, event):
     async with semaphore:
@@ -335,9 +429,9 @@ async def extract_stream(semaphore, browser, event):
 
         if stream_url:
             stream_url = fix_url(stream_url)
-            print(f"  [OK ] {event['roxie_name']} -> {stream_url[:80]}")
+            print(f"  [OK ] {event['roxie_name']} → {stream_url[:80]}")
         else:
-            print(f"  [---] {event['roxie_name']} -> no stream found")
+            print(f"  [---] {event['roxie_name']} → no stream found")
 
         return stream_url
 
@@ -376,10 +470,6 @@ def write_playlist(entries):
 # ── Step 6: write schedule.json ───────────────────────────────────────────────
 
 def write_schedule(entries, now_utc):
-    """
-    Save ALL matched game start times to schedule.json.
-    Includes games that already started so scheduler dedup still works.
-    """
     schedule = []
     for e in entries:
         starts_at = e.get("starts_at")
@@ -401,286 +491,6 @@ def write_schedule(entries, now_utc):
         status = "PAST" if dt < now_utc else "upcoming"
         print(f"  [{status}] {g['name']} @ {fmt_time_pht(dt)}")
 
-    return schedule
-
-
-# ── Step 7: rewrite scheduler.yml with exact cron times ──────────────────────
-
-def write_scheduler_cron(schedule, now_utc):
-    """
-    Dynamically rewrites scheduler.yml so the pre-game scheduler only runs
-    at the EXACT minutes it's needed — one cron entry per upcoming game,
-    scheduled TRIGGER_MINUTES_BEFORE minutes before tip-off.
-
-    Instead of running 288 times a day (*/5), the scheduler now runs
-    only N times per day where N = number of games today.
-
-    Example: 2 games at 8:00 AM and 10:00 AM PHT →
-      cron fires once at 7:10 AM PHT and once at 9:10 AM PHT.
-      That's 2 runs instead of 288. Zero waste.
-
-    If there are no upcoming games, a once-per-day fallback cron is written
-    so the workflow stays active and picks up the next day's schedule.json
-    after the 12AM fixed update-playlist run.
-    """
-    SCHEDULER_YML.parent.mkdir(parents=True, exist_ok=True)
-
-    # Load triggered flags so we skip games already handled
-    flags_file = Path(".triggered_games.json")
-    try:
-        triggered = json.loads(flags_file.read_text()) if flags_file.exists() else {}
-    except Exception:
-        triggered = {}
-
-    cron_entries = []
-    for game in schedule:
-        try:
-            starts_at = datetime.fromisoformat(game["starts_at_iso"])
-            game_id   = game["starts_at_iso"].replace(":", "-").replace("+", "_")
-
-            # Skip already-triggered games
-            if triggered.get(game_id):
-                print(f"  [cron] skipping {game['name']} — already triggered")
-                continue
-
-            # Skip games already started
-            if starts_at <= now_utc:
-                print(f"  [cron] skipping {game['name']} — already started")
-                continue
-
-            # Compute the exact UTC trigger time (50 min before start)
-            trigger_utc = starts_at - timedelta(minutes=TRIGGER_MINUTES_BEFORE)
-
-            # Skip if the trigger time is already in the past
-            if trigger_utc <= now_utc:
-                print(f"  [cron] skipping {game['name']} — trigger time already passed")
-                continue
-
-            minute = trigger_utc.minute
-            hour   = trigger_utc.hour
-            day    = trigger_utc.day
-            month  = trigger_utc.month
-
-            cron_str = f"{minute} {hour} {day} {month} *"
-            label    = (
-                f"{game['name']} — trigger at "
-                f"{trigger_utc.astimezone(PHT).strftime('%m/%d %I:%M %p PHT')} "
-                f"(UTC {trigger_utc.strftime('%H:%M')})"
-            )
-            cron_entries.append((cron_str, label))
-            print(f"  [cron] scheduled: {label}")
-
-        except Exception as e:
-            print(f"  [cron] error processing {game.get('name', '?')}: {e}")
-
-    # ── build the cron block ──────────────────────────────────────────────────
-    if cron_entries:
-        cron_block_lines = []
-        for cron_str, label in cron_entries:
-            cron_block_lines.append(f"    # {label}")
-            cron_block_lines.append(f"    - cron: '{cron_str}'")
-        cron_block = "\n".join(cron_block_lines)
-        schedule_summary = f"{len(cron_entries)} game trigger(s) scheduled"
-    else:
-        # No upcoming games — run once a day at 16:05 UTC (12:05 AM PHT) as a
-        # keepalive so the workflow stays enabled and catches tomorrow's schedule
-        cron_block = (
-            "    # No upcoming games — daily keepalive at 12:05 AM PHT (16:05 UTC)\n"
-            "    # Will be replaced with exact game times after next update-playlist run\n"
-            "    - cron: '5 16 * * *'"
-        )
-        schedule_summary = "no upcoming games — keepalive only"
-
-    # ── write the full yml ────────────────────────────────────────────────────
-    yml_content = f"""\
-name: Pre-Game Scheduler
-# AUTO-GENERATED by scraper.py — do not edit manually.
-# Regenerated after every update-playlist run with exact game trigger times.
-# Current schedule: {schedule_summary}
-
-on:
-  schedule:
-{cron_block}
-  workflow_dispatch:
-
-jobs:
-  check-and-trigger:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check for upcoming games and trigger playlist update if needed
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 - <<'EOF'
-          import json
-          import subprocess
-          import sys
-          from datetime import datetime, timezone, timedelta
-          from pathlib import Path
-
-          # ── config ────────────────────────────────────────────────────────
-          # Must match TRIGGER_MINUTES_BEFORE in scraper.py
-          TRIGGER_MINUTES_BEFORE = 50
-
-          # Acceptance window (minutes). GitHub cron can be a few minutes late,
-          # so we accept triggers up to this many minutes past the ideal time.
-          # A game whose cron fired late by up to LATE_TOLERANCE min still works.
-          LATE_TOLERANCE = 10
-
-          PHT  = timezone(timedelta(hours=8))
-          REPO = "${{ github.repository }}"
-
-          # ── load schedule.json ────────────────────────────────────────────
-          schedule_file = Path("schedule.json")
-          if not schedule_file.exists():
-              print("No schedule.json found — skipping.")
-              sys.exit(0)
-
-          try:
-              games = json.loads(schedule_file.read_text())
-          except Exception as e:
-              print(f"Could not parse schedule.json: {{e}}")
-              sys.exit(0)
-
-          if not games:
-              print("schedule.json is empty — no upcoming games.")
-              sys.exit(0)
-
-          # ── load triggered flags ──────────────────────────────────────────
-          flags_file = Path(".triggered_games.json")
-          try:
-              triggered = json.loads(flags_file.read_text()) if flags_file.exists() else {{}}
-          except Exception:
-              triggered = {{}}
-
-          # ── check each game ───────────────────────────────────────────────
-          now_utc = datetime.now(tz=timezone.utc)
-          now_pht = now_utc.astimezone(PHT)
-
-          print(f"UTC: {{now_utc.strftime('%Y-%m-%d %H:%M:%S')}}")
-          print(f"PHT: {{now_pht.strftime('%Y-%m-%d %H:%M:%S')}} (UTC+8)")
-          print(f"Checking {{len(games)}} scheduled game(s)...")
-          print("-" * 60)
-
-          trigger_game = None
-
-          for game in games:
-              try:
-                  game_id    = game["starts_at_iso"].replace(":", "-").replace("+", "_")
-                  starts_at  = datetime.fromisoformat(game["starts_at_iso"])
-                  starts_pht = starts_at.astimezone(PHT)
-                  mins_until = (starts_at - now_utc).total_seconds() / 60
-
-                  trigger_at      = starts_at - timedelta(minutes=TRIGGER_MINUTES_BEFORE)
-                  mins_to_trigger = (trigger_at - now_utc).total_seconds() / 60
-
-                  print(f"  Game      : {{game['name']}}")
-                  print(f"  Start     : {{starts_pht.strftime('%m/%d %I:%M %p PHT')}} ({{mins_until:+.1f}} min)")
-                  print(f"  Trigger at: {{trigger_at.astimezone(PHT).strftime('%m/%d %I:%M %p PHT')}} ({{mins_to_trigger:+.1f}} min)")
-                  print(f"  ID        : {{game_id}}")
-
-                  if triggered.get(game_id):
-                      print(f"  --> already triggered on {{triggered[game_id]}}, skipping")
-                      print()
-                      continue
-
-                  if mins_until < 0:
-                      print(f"  --> game already started, skipping")
-                      print()
-                      continue
-
-                  # Accept trigger if we are between the ideal trigger time
-                  # and LATE_TOLERANCE minutes after it (handles GitHub cron delay)
-                  # i.e. mins_until is between (TRIGGER_MINUTES_BEFORE - LATE_TOLERANCE)
-                  # and TRIGGER_MINUTES_BEFORE
-                  lower = TRIGGER_MINUTES_BEFORE - LATE_TOLERANCE
-                  upper = TRIGGER_MINUTES_BEFORE
-
-                  if lower <= mins_until <= upper:
-                      trigger_game = dict(game)
-                      trigger_game["_id"] = game_id
-                      print(f"  --> *** IN WINDOW ({{mins_until:.1f}} min to game) — TRIGGERING! ***")
-                      print()
-                      break
-                  elif mins_until > upper:
-                      print(f"  --> not yet in window ({{mins_until:.1f}} min away)")
-                  else:
-                      print(f"  --> missed window ({{mins_until:.1f}} min, needed {{lower}}–{{upper}})")
-
-                  print()
-
-              except Exception as e:
-                  print(f"  Error processing game: {{e}}")
-                  print()
-
-          print("-" * 60)
-
-          if trigger_game is None:
-              print("\\nNo games in trigger window — nothing to do.")
-              sys.exit(0)
-
-          game_id = trigger_game["_id"]
-          print(f"\\nTriggering playlist update for: {{trigger_game['name']}}")
-
-          result = subprocess.run(
-              ["gh", "workflow", "run", "update-playlist.yml", "--repo", REPO],
-              capture_output=True, text=True,
-          )
-          print(result.stdout)
-          if result.returncode != 0:
-              print(f"ERROR: {{result.stderr}}")
-              sys.exit(1)
-
-          # Mark as triggered — will never fire again for this game
-          triggered[game_id] = now_utc.isoformat()
-          flags_file.write_text(json.dumps(triggered, indent=2))
-
-          subprocess.run(["git", "config", "user.name",  "github-actions[bot]"], check=True)
-          subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-          subprocess.run(["git", "add", str(flags_file)], check=True)
-          subprocess.run(["git", "commit", "-m", f"chore: triggered pre-game update for {{game_id}}"], check=True)
-          subprocess.run(["git", "push"], check=True)
-
-          print(f"\\nDone — {{game_id}} is now locked.")
-          EOF
-"""
-
-    SCHEDULER_YML.write_text(yml_content, encoding="utf-8")
-    print(f"\nRewritten {SCHEDULER_YML} — {schedule_summary}")
-
-
-# ── Step 8: git commit scheduler.yml ─────────────────────────────────────────
-
-def commit_scheduler_yml():
-    """Commit the rewritten scheduler.yml so GitHub picks up the new cron times."""
-    try:
-        # Check if there's actually a change to commit
-        result = subprocess.run(
-            ["git", "diff", "--cached", "--quiet", str(SCHEDULER_YML)],
-            capture_output=True,
-        )
-        subprocess.run(["git", "add", str(SCHEDULER_YML)], check=True)
-        diff = subprocess.run(
-            ["git", "diff", "--cached", "--quiet"],
-            capture_output=True,
-        )
-        if diff.returncode == 0:
-            print("scheduler.yml unchanged — no commit needed.")
-            return
-        subprocess.run(
-            ["git", "commit", "-m", "chore: update pre-game scheduler cron times"],
-            check=True,
-        )
-        print("Committed updated scheduler.yml")
-    except Exception as e:
-        print(f"Warning: could not commit scheduler.yml: {e}")
-
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
@@ -691,13 +501,9 @@ async def main():
     print(f"PHT: {now_pht.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)")
     print("=" * 60)
 
-    # 1. Scrape roxie NBA events
     roxie_events = get_roxie_events()
+    ppv_streams  = get_ppv_nba()
 
-    # 2. Get PPV.to NBA streams
-    ppv_streams = get_ppv_nba()
-
-    # ── GUARD: PPV API completely unreachable ─────────────────────────────────
     if ppv_streams is None:
         print("\nCould not reach any PPV mirror — keeping existing playlist unchanged.")
         return
@@ -706,24 +512,16 @@ async def main():
         print("\nPPV reports NO NBA/Basketball games — writing empty playlist.")
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write("#EXTM3U\n")
-        schedule = write_schedule([], now_utc)
-        print("\nUpdating scheduler cron (no games today) ...")
-        write_scheduler_cron(schedule, now_utc)
-        commit_scheduler_yml()
+        write_schedule([], now_utc)
         return
 
-    # ── GUARD: nothing on roxie either ───────────────────────────────────────
     if not roxie_events:
         print("\nNo events found on roxiestreams — writing empty playlist.")
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write("#EXTM3U\n")
-        schedule = write_schedule([], now_utc)
-        print("\nUpdating scheduler cron (no events) ...")
-        write_scheduler_cron(schedule, now_utc)
-        commit_scheduler_yml()
+        write_schedule([], now_utc)
         return
 
-    # 3. Match each roxie event to a PPV stream
     print("-" * 60)
     print("Matching events to PPV.to ...")
     matched_events = []
@@ -736,29 +534,18 @@ async def main():
             ev["starts_at"]    = ppv.get("starts_at")
             matched_events.append(ev)
         else:
-            print(f"    [skipped] {ev['roxie_name']} — no PPV match, ignoring")
+            print(f"    [skipped] '{ev['roxie_name']}' — no match found")
 
     if not matched_events:
         print("\nNo roxie events matched any PPV game — writing empty playlist.")
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write("#EXTM3U\n")
-        schedule = write_schedule([], now_utc)
-        print("\nUpdating scheduler cron (no matches) ...")
-        write_scheduler_cron(schedule, now_utc)
-        commit_scheduler_yml()
+        write_schedule([], now_utc)
         return
 
-    # Sort by start time
     matched_events.sort(key=lambda x: x.get("starts_at") or now_utc)
+    write_schedule(matched_events, now_utc)
 
-    # 4. Write schedule.json
-    schedule = write_schedule(matched_events, now_utc)
-
-    # 5. Rewrite scheduler.yml with exact cron times for today's games
-    print("\nUpdating scheduler cron times ...")
-    write_scheduler_cron(schedule, now_utc)
-
-    # 6. Extract stream URLs
     print("=" * 60)
     print(f"Extracting streams for {len(matched_events)} matched event(s) ...")
     print("-" * 60)
@@ -780,7 +567,6 @@ async def main():
     for ev, url in zip(matched_events, results):
         ev["stream_url"] = url
 
-    # 7. Write playlist
     write_playlist(matched_events)
 
 
