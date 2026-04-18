@@ -14,6 +14,9 @@ on:
 jobs:
   update-playlist:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      workflows: write
     concurrency:
       group: playlist-update
       cancel-in-progress: false
