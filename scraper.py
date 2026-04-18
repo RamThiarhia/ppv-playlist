@@ -402,17 +402,12 @@ async def extract_stream(semaphore, browser, event):
 # ── Step 5: write playlist ────────────────────────────────────────────────────
 
 def write_playlist(entries):
-    lines   = ["#EXTM3U"]
-    ok      = 0
-    skipped = 0
+    lines  = ["#EXTM3U"]
+    ok     = 0
+    no_url = 0
 
     for e in entries:
-        url = e.get("stream_url")
-        if not url:
-            skipped += 1
-            continue
-
-        # Use first link for referrer/origin headers
+        url    = e.get("stream_url") or ""
         links  = e.get("links", [])
         link   = links[0] if links else ""
         origin = get_origin(link) if link else ""
@@ -423,13 +418,18 @@ def write_playlist(entries):
         lines.append(f'#EXTVLCOPT:http-referrer={link}')
         lines.append(f'#EXTVLCOPT:http-origin={origin}')
         lines.append(f'#EXTVLCOPT:http-user-agent={USER_AGENT}')
-        lines.append(url)
-        ok += 1
+        lines.append(url)  # blank if no stream found — entry still appears in playlist
+
+        if url:
+            ok += 1
+        else:
+            no_url += 1
+            print(f"  [no url] '{name}' — added with blank stream")
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    print(f"\nSaved {OUTPUT_FILE}: {ok} streams, {skipped} skipped")
+    print(f"\nSaved {OUTPUT_FILE}: {ok} with stream, {no_url} without stream")
 
 
 # ── Step 6: write schedule.json ───────────────────────────────────────────────
