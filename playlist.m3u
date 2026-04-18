@@ -4,8 +4,18 @@
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.appmissao.com.br/nba2.m3u8
+#EXTINF:-1 tvg-logo="" group-title="NBA",Toronto Raptors vs Cleveland Cavaliers
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/nba.m3u8
+#EXTINF:-1 tvg-logo="" group-title="NBA",Minnesota Timberwolves vs Denver Nuggets
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.underupturnip.net/nba2.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/fa7db3e146e8965c7e80ab6268da50e1-thumbnail.jpg" group-title="NBA",Houston Rockets vs. Los Angeles Lakers 04/19 08:30 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-4
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/nba4.m3u8
+https://daffodil.intelsystech.com.br/nba4.m3u8
