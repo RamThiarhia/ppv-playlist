@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Toronto Raptors vs. Cleveland Cavaliers 04/19 01:00 AM PHT",
+    "starts_at_iso": "2026-04-18T17:00:00+00:00"
+  },
+  {
+    "name": "Minnesota Timberwolves vs. Denver Nuggets 04/19 03:30 AM PHT",
+    "starts_at_iso": "2026-04-18T19:30:00+00:00"
+  },
+  {
+    "name": "Atlanta Hawks vs. New York Knicks 04/19 06:00 AM PHT",
+    "starts_at_iso": "2026-04-18T22:00:00+00:00"
+  },
+  {
+    "name": "Houston Rockets vs. Los Angeles Lakers 04/19 08:30 AM PHT",
+    "starts_at_iso": "2026-04-19T00:30:00+00:00"
+  }
+]
