@@ -4,11 +4,6 @@
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.underupturnip.net/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/555361521b69582af2002f23462440bc-thumbnail.jpg" group-title="NBA",Minnesota Timberwolves vs. Denver Nuggets 04/19 03:30 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/nba2.m3u8
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/be7bc3a6bb6087e7256e9a876822cac1-thumbnail.jpg" group-title="NBA",Atlanta Hawks vs. New York Knicks 04/19 06:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-3
 #EXTVLCOPT:http-origin=https://roxiestreams.su
