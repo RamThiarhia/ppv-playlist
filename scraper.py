@@ -32,10 +32,7 @@ OUTPUT_FILE    = "playlist.m3u"
 MAX_CONCURRENT = 3
 PAGE_TIMEOUT   = 20_000  # ms
 
-# Philippine Time = UTC+8
 PHT = timezone(timedelta(hours=8))
-
-# How close two event start times must be to count as a match (minutes)
 TIME_MATCH_WINDOW = 60
 
 USER_AGENT = (
@@ -44,65 +41,35 @@ USER_AGENT = (
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
-# ── NBA team abbreviation → keyword map ───────────────────────────────────────
-# Expands short names/abbreviations that roxie uses into words that PPV uses.
-# Keys are lowercased. Values are extra words added to the roxie word set.
+# ── NBA team abbreviation/nickname → keyword expansion ───────────────────────
 ABBREV_MAP = {
-    "okc"       : {"oklahoma", "thunder"},
-    "gs"        : {"golden", "warriors"},
-    "la"        : {"angeles", "clippers", "lakers"},
-    "lac"       : {"clippers", "angeles"},
-    "lal"       : {"lakers", "angeles"},
-    "ny"        : {"new", "york", "knicks"},
-    "nyk"       : {"new", "york", "knicks"},
-    "no"        : {"new", "orleans", "pelicans"},
-    "nop"       : {"new", "orleans", "pelicans"},
-    "sa"        : {"san", "antonio", "spurs"},
-    "sas"       : {"san", "antonio", "spurs"},
-    "sf"        : {"golden", "warriors"},
-    "phx"       : {"phoenix", "suns"},
-    "phi"       : {"philadelphia", "76ers", "sixers"},
-    "mil"       : {"milwaukee", "bucks"},
-    "mem"       : {"memphis", "grizzlies"},
-    "ind"       : {"indiana", "pacers"},
-    "cha"       : {"charlotte", "hornets"},
-    "cle"       : {"cleveland", "cavaliers"},
-    "det"       : {"detroit", "pistons"},
-    "tor"       : {"toronto", "raptors"},
-    "orl"       : {"orlando", "magic"},
-    "was"       : {"washington", "wizards"},
-    "atl"       : {"atlanta", "hawks"},
-    "mia"       : {"miami", "heat"},
-    "bkn"       : {"brooklyn", "nets"},
-    "bos"       : {"boston", "celtics"},
-    "chi"       : {"chicago", "bulls"},
-    "dal"       : {"dallas", "mavericks"},
-    "den"       : {"denver", "nuggets"},
-    "hou"       : {"houston", "rockets"},
-    "lac"       : {"clippers"},
-    "min"       : {"minnesota", "timberwolves"},
-    "por"       : {"portland", "trail", "blazers"},
-    "sac"       : {"sacramento", "kings"},
-    "uta"       : {"utah", "jazz"},
-    "76ers"     : {"philadelphia", "sixers"},
-    "sixers"    : {"philadelphia", "76ers"},
-    "blazers"   : {"portland", "trail"},
-    "wolves"    : {"minnesota", "timberwolves"},
-    "mavs"      : {"dallas", "mavericks"},
-    "cavs"      : {"cleveland", "cavaliers"},
-    "knicks"    : {"new", "york"},
-    "nets"      : {"brooklyn"},
-    "spurs"     : {"san", "antonio"},
-    "pelicans"  : {"new", "orleans"},
-    "thunder"   : {"oklahoma", "city"},
-    "warriors"  : {"golden", "state"},
-    "clippers"  : {"los", "angeles"},
-    "lakers"    : {"los", "angeles"},
-    "nuggets"   : {"denver"},
-    "timberwolves": {"minnesota"},
+    "okc": {"oklahoma", "thunder"}, "gs": {"golden", "warriors"},
+    "la": {"angeles", "clippers", "lakers"}, "lac": {"clippers", "angeles"},
+    "lal": {"lakers", "angeles"}, "ny": {"new", "york", "knicks"},
+    "nyk": {"new", "york", "knicks"}, "no": {"new", "orleans", "pelicans"},
+    "nop": {"new", "orleans", "pelicans"}, "sa": {"san", "antonio", "spurs"},
+    "sas": {"san", "antonio", "spurs"}, "phx": {"phoenix", "suns"},
+    "phi": {"philadelphia", "76ers", "sixers"}, "mil": {"milwaukee", "bucks"},
+    "mem": {"memphis", "grizzlies"}, "ind": {"indiana", "pacers"},
+    "cha": {"charlotte", "hornets"}, "cle": {"cleveland", "cavaliers"},
+    "det": {"detroit", "pistons"}, "tor": {"toronto", "raptors"},
+    "orl": {"orlando", "magic"}, "was": {"washington", "wizards"},
+    "atl": {"atlanta", "hawks"}, "mia": {"miami", "heat"},
+    "bkn": {"brooklyn", "nets"}, "bos": {"boston", "celtics"},
+    "chi": {"chicago", "bulls"}, "dal": {"dallas", "mavericks"},
+    "den": {"denver", "nuggets"}, "hou": {"houston", "rockets"},
+    "min": {"minnesota", "timberwolves"}, "por": {"portland", "trail", "blazers"},
+    "sac": {"sacramento", "kings"}, "uta": {"utah", "jazz"},
+    "76ers": {"philadelphia", "sixers"}, "sixers": {"philadelphia", "76ers"},
+    "blazers": {"portland", "trail"}, "wolves": {"minnesota", "timberwolves"},
+    "mavs": {"dallas", "mavericks"}, "cavs": {"cleveland", "cavaliers"},
+    "knicks": {"new", "york"}, "nets": {"brooklyn"},
+    "spurs": {"san", "antonio"}, "pelicans": {"new", "orleans"},
+    "thunder": {"oklahoma", "city"}, "warriors": {"golden", "state"},
+    "clippers": {"los", "angeles"}, "lakers": {"los", "angeles"},
+    "nuggets": {"denver"}, "timberwolves": {"minnesota"},
 }
 
-# Words to always strip before matching (they add noise, not signal)
 NOISE_WORDS = {
     "vs", "at", "the", "nba", "game", "basketball",
     "live", "stream", "watch", "online",
@@ -115,70 +82,60 @@ def get_origin(url):
     p = urlparse(url)
     return f"{p.scheme}://{p.netloc}"
 
-
 def fix_url(url):
     return re.sub(r"index\.m3u8$", "tracks-v1a1/mono.ts.m3u8", url, flags=re.I)
-
 
 def fmt_time_pht(dt):
     if dt is None:
         return ""
     return dt.astimezone(PHT).strftime("%m/%d %I:%M %p PHT")
 
-
 def normalize(s):
     return re.sub(r"[^a-z0-9 ]", "", s.lower()).strip()
 
-
 def expand_words(words):
-    """
-    Expand a word set using ABBREV_MAP so abbreviations match full names.
-    e.g. {'okc', 'lakers'} → {'okc', 'oklahoma', 'thunder', 'lakers', 'los', 'angeles'}
-    """
     expanded = set(words)
     for w in words:
         if w in ABBREV_MAP:
             expanded |= ABBREV_MAP[w]
     return expanded - NOISE_WORDS
 
-
 def name_to_words(name):
-    """Normalize a name string into a clean, expanded word set."""
-    words = set(normalize(name).split()) - NOISE_WORDS
-    return expand_words(words)
-
+    return expand_words(set(normalize(name).split()) - NOISE_WORDS)
 
 def slug_to_words(url):
-    """
-    Extract team name words from a roxie URL slug.
-    e.g. /nba/lakers-celtics-2 -> {'lakers', 'celtics'}
-    """
     path = urlparse(url).path
     slug = path.rstrip("/").split("/")[-1]
     slug = re.sub(r"-\d+$", "", slug)
-    words = set(slug.lower().split("-")) - NOISE_WORDS - {""}
-    return expand_words(words)
-
+    return expand_words(set(slug.lower().split("-")) - NOISE_WORDS - {""})
 
 def match_score(rwords, pwords):
-    """
-    Score overlap between two word sets.
-    Uses the SMALLER set as denominator so that long PPV city names
-    don't dilute the score when roxie uses short team names.
-    e.g. {'lakers'} vs {'los','angeles','lakers','vs','thunder','oklahoma','city'}
-         old: 1/7 = 14%  →  new: 1/1 = 100%
-    """
     if not rwords or not pwords:
         return 0.0
-    common = rwords & pwords
-    return len(common) / min(len(rwords), len(pwords))
+    return len(rwords & pwords) / min(len(rwords), len(pwords))
 
 
-# ── Step 1: scrape roxiestreams NBA page ──────────────────────────────────────
+# ── Step 1: scrape roxiestreams — group multiple streams per game ─────────────
 
 def get_roxie_events():
+    """
+    Scrapes roxiestreams.su/nba and GROUPS all stream links that belong to
+    the same game under one event entry.
+
+    Roxie lists each stream as a separate table row with the same game name:
+      Minnesota Timberwolves vs Denver Nuggets  /nba/timberwolves-nuggets-1
+      Minnesota Timberwolves vs Denver Nuggets  /nba/timberwolves-nuggets-2
+
+    We merge these into one event with a list of links:
+      { roxie_name, links: [...], roxie_time_str }
+
+    During stream extraction we try ALL links and keep the first working one.
+    This is why stream 2 was missing — the old code treated each row as a
+    separate event and only wrote one entry per matched PPV game.
+    """
     print(f"Scraping {NBA_URL} ...")
-    events = []
+    # Use ordered dict keyed by game name to preserve order and group dupes
+    grouped = {}
 
     try:
         r    = requests.get(NBA_URL, headers={"User-Agent": USER_AGENT}, timeout=15)
@@ -193,10 +150,12 @@ def get_roxie_events():
             if not a:
                 continue
 
-            event_name = a.text(strip=True)
-            href       = a.attributes.get("href", "")
+            name = a.text(strip=True)
+            href = a.attributes.get("href", "")
             if not href:
                 continue
+
+            link = urljoin(BASE_URL, href)
 
             time_str = ""
             for cell in cells:
@@ -205,26 +164,28 @@ def get_roxie_events():
                     time_str = txt
                     break
 
-            events.append({
-                "roxie_name"    : event_name,
-                "link"          : urljoin(BASE_URL, href),
-                "roxie_time_str": time_str,
-            })
+            if name not in grouped:
+                grouped[name] = {
+                    "roxie_name"    : name,
+                    "links"         : [],
+                    "roxie_time_str": time_str,
+                }
+
+            grouped[name]["links"].append(link)
 
     except Exception as e:
         print(f"  FAIL: {e}")
 
-    print(f"  Found {len(events)} NBA events on roxie")
+    events = list(grouped.values())
+    print(f"  Found {len(events)} unique NBA game(s) on roxie:")
+    for ev in events:
+        print(f"    '{ev['roxie_name']}' — {len(ev['links'])} stream link(s)")
     return events
 
 
 # ── Step 2: get PPV.to NBA streams ───────────────────────────────────────────
 
 def get_ppv_nba():
-    """
-    Fetches PPV.to streams.
-    Returns None on network failure, [] if API up but no NBA games.
-    """
     for url in PPV_MIRRORS:
         try:
             print(f"Fetching PPV.to from {url} ...")
@@ -266,64 +227,49 @@ def get_ppv_nba():
 
 def match_event_to_ppv(roxie_ev, ppv_streams):
     """
-    Four strategies, in order of confidence:
-
-    1. Name match  — expanded word overlap between roxie name and PPV name
-                     uses min-set denominator so short names aren't penalised
-    2. Slug match  — team words from URL slug matched against PPV name
-    3. Time match  — PPV event starts within TIME_MATCH_WINDOW minutes of roxie time
-    4. Fallback    — if only ONE PPV game is available, assign it directly
-                     (common on single-game days, avoids false negatives)
-
-    Returns best PPV stream dict or None.
+    Four strategies in order:
+    1. Name match  — expanded word overlap, min-set denominator
+    2. Slug match  — team words from first URL slug
+    3. Time match  — game start within TIME_MATCH_WINDOW minutes
+    4. Fallback    — only one PPV game available, assign directly
     """
     roxie_name = roxie_ev.get("roxie_name", "")
-    roxie_link = roxie_ev.get("link", "")
+    first_link = roxie_ev["links"][0] if roxie_ev.get("links") else ""
+    rwords     = name_to_words(roxie_name)
 
-    rwords = name_to_words(roxie_name)
-
-    # ── Strategy 1: name word overlap (expanded, min-denominator) ────────────
+    # Strategy 1: name word overlap
     best_score  = 0.0
     best_stream = None
-
     for s in ppv_streams:
-        pwords  = name_to_words(s["name"])
-        score   = match_score(rwords, pwords)
+        score = match_score(rwords, name_to_words(s["name"]))
         if score > best_score:
             best_score  = score
             best_stream = s
-
     if best_score >= 0.5:
         print(f"    [name {best_score:.0%}] '{roxie_name}' → '{best_stream['name']}'")
         return best_stream
 
-    # ── Strategy 2: slug word match ───────────────────────────────────────────
-    slug_words = slug_to_words(roxie_link)
-
+    # Strategy 2: slug word match
+    slug_words = slug_to_words(first_link)
     if slug_words:
         best_slug_score  = 0.0
         best_slug_stream = None
-
         for s in ppv_streams:
-            pwords = name_to_words(s["name"])
-            score  = match_score(slug_words, pwords)
+            score = match_score(slug_words, name_to_words(s["name"]))
             if score > best_slug_score:
                 best_slug_score  = score
                 best_slug_stream = s
-
         if best_slug_score >= 0.4:
             print(f"    [slug {best_slug_score:.0%}] {slug_words} → '{best_slug_stream['name']}'")
             return best_slug_stream
 
-    # ── Strategy 3: time window match ────────────────────────────────────────
+    # Strategy 3: time window match
     time_str   = roxie_ev.get("roxie_time_str", "")
     time_match = re.search(r"(\d{1,2}):(\d{2})\s*(AM|PM)", time_str, re.I)
-
     if time_match:
         hour   = int(time_match.group(1))
         minute = int(time_match.group(2))
         ampm   = time_match.group(3).upper()
-
         if ampm == "PM" and hour != 12:
             hour += 12
         elif ampm == "AM" and hour == 12:
@@ -331,7 +277,6 @@ def match_event_to_ppv(roxie_ev, ppv_streams):
 
         ET     = timezone(timedelta(hours=-4))
         now_et = datetime.now(tz=ET)
-
         candidates = []
         for day_offset in (0, 1, -1):
             try:
@@ -344,94 +289,112 @@ def match_event_to_ppv(roxie_ev, ppv_streams):
 
         window = timedelta(minutes=TIME_MATCH_WINDOW)
         for s in ppv_streams:
-            ppv_start = s["starts_at"]
             for candidate in candidates:
-                if abs(ppv_start - candidate) <= window:
-                    print(f"    [time] '{roxie_name}' @ {time_str} → '{s['name']}' @ {fmt_time_pht(ppv_start)}")
+                if abs(s["starts_at"] - candidate) <= window:
+                    print(f"    [time] '{roxie_name}' → '{s['name']}' @ {fmt_time_pht(s['starts_at'])}")
                     return s
 
-    # ── Strategy 4: single-game fallback ─────────────────────────────────────
-    # If only one PPV game is available today there is no ambiguity — it must
-    # be this game. Assign it directly rather than dropping the event.
+    # Strategy 4: single-game fallback
     if len(ppv_streams) == 1:
         print(f"    [fallback] '{roxie_name}' → '{ppv_streams[0]['name']}' (only game available)")
         return ppv_streams[0]
 
-    print(f"    [no match] '{roxie_name}' — tried name/slug/time, all failed")
+    print(f"    [no match] '{roxie_name}'")
     return None
 
 
-# ── Step 4: Playwright — extract stream URL ───────────────────────────────────
+# ── Step 4: Playwright — try all stream links, keep first working URL ─────────
+
+async def extract_stream_from_link(page, link, roxie_name):
+    """Try a single roxie link and return stream URL or None."""
+    origin = get_origin(link)
+    stream_url = None
+
+    try:
+        resp = await page.goto(link, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT)
+        if not resp or resp.status != 200:
+            print(f"    [{roxie_name}] HTTP {resp.status if resp else 'none'} on {link}")
+            return None
+
+        try:
+            btn = page.locator("button.streambutton").first
+            await btn.click(force=True, click_count=2, timeout=3_000)
+        except Exception:
+            try:
+                await page.mouse.click(640, 360)
+            except Exception:
+                pass
+
+        try:
+            await page.wait_for_function(
+                "() => typeof clapprPlayer !== 'undefined'",
+                timeout=8_000,
+            )
+            stream_url = await page.evaluate("() => clapprPlayer.options.source")
+        except PWTimeoutError:
+            pass
+
+        if not stream_url:
+            for expr in [
+                "window.player?.options?.source",
+                "window.jwplayer?.()?.getPlaylistItem?.()?.file",
+                "document.querySelector('video')?.src",
+                "document.querySelector('source')?.src",
+            ]:
+                try:
+                    val = await page.evaluate(expr)
+                    if val and isinstance(val, str) and ".m3u8" in val:
+                        stream_url = val
+                        break
+                except Exception:
+                    pass
+
+    except Exception as e:
+        print(f"    [{roxie_name}] error on {link}: {e}")
+
+    return fix_url(stream_url) if stream_url else None
+
 
 async def extract_stream(semaphore, browser, event):
+    """
+    Try each stream link for this game in order.
+    Returns the first working stream URL found, or None if all fail.
+    """
     async with semaphore:
-        link   = event["link"]
-        origin = get_origin(link)
+        roxie_name = event["roxie_name"]
+        links      = event.get("links", [])
+        first_link = links[0] if links else ""
+        origin     = get_origin(first_link) if first_link else BASE_URL
 
         context = await browser.new_context(
             user_agent=USER_AGENT,
             extra_http_headers={
-                "Referer": link,
+                "Referer": first_link,
                 "Origin" : origin,
             },
         )
-        page       = await context.new_page()
+        page = await context.new_page()
+
         stream_url = None
-
         try:
-            resp = await page.goto(link, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT)
-
-            if not resp or resp.status != 200:
-                print(f"  [{event['roxie_name']}] HTTP {resp.status if resp else 'none'}")
-                return None
-
-            try:
-                btn = page.locator("button.streambutton").first
-                await btn.click(force=True, click_count=2, timeout=3_000)
-            except Exception:
-                try:
-                    await page.mouse.click(640, 360)
-                except Exception:
-                    pass
-
-            try:
-                await page.wait_for_function(
-                    "() => typeof clapprPlayer !== 'undefined'",
-                    timeout=8_000,
-                )
-                stream_url = await page.evaluate("() => clapprPlayer.options.source")
-            except PWTimeoutError:
-                pass
+            for i, link in enumerate(links, 1):
+                print(f"  [{roxie_name}] trying link {i}/{len(links)}: {link}")
+                stream_url = await extract_stream_from_link(page, link, roxie_name)
+                if stream_url:
+                    print(f"  [OK  {i}/{len(links)}] {roxie_name} → {stream_url[:80]}")
+                    break
+                else:
+                    print(f"  [--- {i}/{len(links)}] {roxie_name} → no stream on this link")
 
             if not stream_url:
-                for expr in [
-                    "window.player?.options?.source",
-                    "window.jwplayer?.()?.getPlaylistItem?.()?.file",
-                    "document.querySelector('video')?.src",
-                    "document.querySelector('source')?.src",
-                ]:
-                    try:
-                        val = await page.evaluate(expr)
-                        if val and isinstance(val, str) and ".m3u8" in val:
-                            stream_url = val
-                            break
-                    except Exception:
-                        pass
+                print(f"  [FAIL] {roxie_name} → all {len(links)} link(s) failed")
 
-        except Exception as e:
-            print(f"  [{event['roxie_name']}] error: {e}")
         finally:
             try:
                 await page.close()
                 await context.close()
             except Exception:
                 pass
-
-        if stream_url:
-            stream_url = fix_url(stream_url)
-            print(f"  [OK ] {event['roxie_name']} → {stream_url[:80]}")
-        else:
-            print(f"  [---] {event['roxie_name']} → no stream found")
 
         return stream_url
 
@@ -449,7 +412,9 @@ def write_playlist(entries):
             skipped += 1
             continue
 
-        link   = e.get("link", "")
+        # Use first link for referrer/origin headers
+        links  = e.get("links", [])
+        link   = links[0] if links else ""
         origin = get_origin(link) if link else ""
         logo   = e.get("logo", "")
         name   = e.get("display_name", e.get("roxie_name", "Unknown"))
@@ -547,7 +512,7 @@ async def main():
     write_schedule(matched_events, now_utc)
 
     print("=" * 60)
-    print(f"Extracting streams for {len(matched_events)} matched event(s) ...")
+    print(f"Extracting streams for {len(matched_events)} unique game(s) ...")
     print("-" * 60)
 
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
