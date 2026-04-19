@@ -4,16 +4,17 @@
     "starts_at_iso": "2026-04-18T17:00:00+00:00",
     "roxie_name": "Toronto Raptors vs Cleveland Cavaliers",
     "link": "https://roxiestreams.su/nba-streams-1",
-    "display_name": "Toronto Raptors vs. Cleveland Cavaliers 04/19 01:00 AM PHT 04/19 01:00 AM PHT",
-    "logo": ""
+    "display_name": "Toronto Raptors vs. Cleveland Cavaliers 04/19 01:00 AM PHT",
+    "logo": "",
+    "stream_url": "https://daffodil.appmissao.com.br/nba.m3u8"
   },
   {
     "name": "Minnesota Timberwolves vs. Denver Nuggets 04/19 03:30 AM PHT",
     "starts_at_iso": "2026-04-18T19:30:00+00:00",
     "roxie_name": "Minnesota Timberwolves vs Denver Nuggets",
     "link": "https://roxiestreams.su/nba-streams-2",
-    "stream_url": "https://daffodil.intelsystech.com.br/nba2.m3u8",
-    "display_name": "Minnesota Timberwolves vs. Denver Nuggets 04/19 03:30 AM PHT 04/19 03:30 AM PHT",
+    "stream_url": "https://daffodil.appmissao.com.br/nba2.m3u8",
+    "display_name": "Minnesota Timberwolves vs. Denver Nuggets 04/19 03:30 AM PHT",
     "logo": ""
   },
   {
@@ -22,7 +23,7 @@
     "roxie_name": "Atlanta Hawks vs New York Knicks",
     "link": "https://roxiestreams.su/nba-streams-3",
     "stream_url": "https://daffodil.appmissao.com.br/nba2.m3u8",
-    "display_name": "Atlanta Hawks vs. New York Knicks 04/19 06:00 AM PHT 04/19 06:00 AM PHT",
+    "display_name": "Atlanta Hawks vs. New York Knicks 04/19 06:00 AM PHT",
     "logo": ""
   },
   {
@@ -30,7 +31,8 @@
     "starts_at_iso": "2026-04-19T00:30:00+00:00",
     "roxie_name": "Houston Rockets vs Los Angeles Lakers",
     "link": "https://roxiestreams.su/nba-streams-4",
-    "display_name": "Houston Rockets vs. Los Angeles Lakers 04/19 08:30 AM PHT 04/19 08:30 AM PHT",
-    "logo": ""
+    "display_name": "Houston Rockets vs. Los Angeles Lakers 04/19 08:30 AM PHT",
+    "logo": "",
+    "stream_url": "https://daffodil.appmissao.com.br/nba4.m3u8"
   }
 ]
