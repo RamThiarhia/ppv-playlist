@@ -414,7 +414,7 @@ def write_playlist(entries: list):
     ok      = 0
 
     for e in entries:
-        url = e.get("stream_url") or ""
+        url = e.get("stream_url") or "http://no-stream-yet.com/dummy.m3u8"
 
         link   = e.get("link", "")
         origin = get_origin(link) if link else ""
