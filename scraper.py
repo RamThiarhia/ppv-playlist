@@ -412,14 +412,9 @@ async def extract_stream(browser, event: dict, index: int, total: int):
 def write_playlist(entries: list):
     lines   = ["#EXTM3U"]
     ok      = 0
-    skipped = 0
 
     for e in entries:
-        url = e.get("stream_url")
-        if not url:
-            skipped += 1
-            print(f"  SKIP (no stream): {e.get('roxie_name', '?')}")
-            continue
+        url = e.get("stream_url") or ""
 
         link   = e.get("link", "")
         origin = get_origin(link) if link else ""
@@ -436,7 +431,7 @@ def write_playlist(entries: list):
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    print(f"\nSaved {OUTPUT_FILE}: {ok} streams, {skipped} skipped")
+    print(f"\nSaved {OUTPUT_FILE}: {ok} streams written in total")
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -515,7 +510,11 @@ async def main():
 
         # Prepare formatting for the final playlist output
         for s in schedule_state:
-            s["display_name"] = f"{s['name']} {fmt_time_pht(s.get('starts_at'))}".strip()
+            time_str = fmt_time_pht(s.get('starts_at')).strip()
+            if time_str and time_str in s['name']:
+                s["display_name"] = s['name']
+            else:
+                s["display_name"] = f"{s['name']} {time_str}".strip()
             s["logo"] = s.get("poster", "")
 
         await browser.close()
