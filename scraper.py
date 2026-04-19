@@ -9,6 +9,8 @@ Fixes:
 
 import asyncio
 import re
+import json
+import sys
 from datetime import datetime, timezone, timedelta
 from urllib.parse import urljoin, urlparse
 
@@ -26,6 +28,7 @@ PPV_MIRRORS = [
 ]
 
 OUTPUT_FILE       = "playlist.m3u"
+SCHEDULE_FILE     = "schedule.json"
 PAGE_TIMEOUT      = 30_000   # 30s page load
 CLAPPR_TIMEOUT    = 25_000   # extended: 25s (was 15s)
 BUTTON_TIMEOUT    = 5_000
@@ -63,6 +66,37 @@ def slug_to_words(url: str) -> set:
     slug  = path.rstrip("/").split("/")[-1]
     slug  = re.sub(r"-\d+$", "", slug)
     return set(slug.lower().split("-")) - {"vs", "at", ""}
+
+
+def load_schedule() -> list:
+    try:
+        with open(SCHEDULE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            for item in data:
+                # Convert ISO string back to datetime
+                if "starts_at_iso" in item and item["starts_at_iso"]:
+                    item["starts_at"] = datetime.fromisoformat(item["starts_at_iso"])
+                else:
+                    item["starts_at"] = None
+            print(f"Loaded {len(data)} scheduled events from {SCHEDULE_FILE}")
+            return data
+    except Exception as e:
+        print(f"No valid {SCHEDULE_FILE} found or error loading: {e}")
+        return []
+
+
+def save_schedule(schedule: list):
+    export_data = []
+    for item in schedule:
+        # Create a shallow copy to dict without mutating original datetime
+        row = dict(item)
+        if "starts_at" in row and isinstance(row["starts_at"], datetime):
+            row["starts_at_iso"] = row["starts_at"].isoformat()
+            del row["starts_at"]
+        export_data.append(row)
+    with open(SCHEDULE_FILE, "w", encoding="utf-8") as f:
+        json.dump(export_data, f, indent=2)
+    print(f"Saved {len(export_data)} events state to {SCHEDULE_FILE}")
 
 
 # ── Step 1: scrape roxiestreams NBA via Playwright ───────────────────────────
@@ -413,6 +447,9 @@ async def main():
     now_pht = now_utc.astimezone(PHT)
     print(f"UTC: {now_utc.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"PHT: {now_pht.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)")
+    
+    is_full_fetch = (now_pht.hour == 0) or ("--full" in sys.argv)
+    print(f"MODE: {'FULL FETCH (12:00 AM PHT)' if is_full_fetch else 'UPDATE (Roxie streams only)'}")
     print("=" * 60)
 
     async with async_playwright() as pw:
@@ -425,51 +462,68 @@ async def main():
             ],
         )
 
-        # 1. Scrape roxie (JS-rendered, uses Playwright now)
+        schedule_state = []
+        if is_full_fetch:
+            print("1. [FULL FETCH] Getting PPV NBA streams ...")
+            ppv_streams = get_ppv_nba()
+            if not ppv_streams:
+                print("No games found on PPV.to. Saving empty schedule.")
+                save_schedule([])
+                write_playlist([])
+                await browser.close()
+                return
+            
+            # Initialize schedule state with fresh PPV data
+            schedule_state = ppv_streams
+        else:
+            print("1. [UPDATE] Loading schedule.json ...")
+            schedule_state = load_schedule()
+            if not schedule_state:
+                print("No active schedule found in schedule.json. Generating empty playlist.")
+                write_playlist([])
+                await browser.close()
+                return
+
+        # 2. Scrape roxie (JS-rendered, uses Playwright)
+        print("-" * 60)
         roxie_events = await get_roxie_events_async(browser)
 
-        if not roxie_events:
-            print("No NBA events found on roxiestreams.")
-            with open(OUTPUT_FILE, "w") as f:
-                f.write("#EXTM3U\n")
-            await browser.close()
-            return
-
-        # 2. Get PPV NBA streams
+        # 3. Match roxie events -> schedule_state items
         print("-" * 60)
-        ppv_streams = get_ppv_nba()
-
-        # 3. Match events — pass stable now_utc so time matching is deterministic
-        print("-" * 60)
-        print("Matching events to PPV.to ...")
+        print("Matching roxie events to schedule items ...")
         for ev in roxie_events:
-            ppv = match_event_to_ppv(ev, ppv_streams, reference_utc=now_utc)
+            ppv = match_event_to_ppv(ev, schedule_state, reference_utc=now_utc)
             if ppv:
-                ev["display_name"] = f"{ppv['name']} {fmt_time_pht(ppv.get('starts_at'))}".strip()
-                ev["logo"]         = ppv.get("poster", "")
-                ev["starts_at"]    = ppv.get("starts_at")
-            else:
-                ev["display_name"] = ev["roxie_name"]
-                ev["logo"]         = ""
-                ev["starts_at"]    = now_utc
+                # Store the latest Roxie metadata/link on the matched schedule item
+                ppv["roxie_name"] = ev["roxie_name"]
+                ppv["link"] = ev["link"]
 
-        # Sort by start time
-        roxie_events.sort(key=lambda x: x.get("starts_at") or now_utc)
+        # Sort schedule by start time
+        schedule_state.sort(key=lambda x: x.get("starts_at") or now_utc)
 
-        # 4. Extract streams sequentially
+        # 4. Extract streams sequentially for matched items
         print("=" * 60)
-        print(f"Extracting streams for {len(roxie_events)} events ...")
+        to_extract = [s for s in schedule_state if s.get("link")]
+        print(f"Extracting streams for {len(to_extract)} scheduled events (out of {len(schedule_state)} total) ...")
 
-        total = len(roxie_events)
-        for i, ev in enumerate(roxie_events, start=1):
-            url = await extract_stream(browser, ev, i, total)
-            ev["stream_url"] = url
+        for i, s in enumerate(to_extract, start=1):
+            url = await extract_stream(browser, s, i, len(to_extract))
+            if url:
+                s["stream_url"] = url
+            # If `url` is None (fails extraction or timeout), we intentionally DO NOT overwrite `s.get("stream_url")`
+            # This maintains whatever stream_url was previously saved as the fallback.
+
+        # Prepare formatting for the final playlist output
+        for s in schedule_state:
+            s["display_name"] = f"{s['name']} {fmt_time_pht(s.get('starts_at'))}".strip()
+            s["logo"] = s.get("poster", "")
 
         await browser.close()
 
-    # 5. Write playlist
+    # 5. Write playlist & final schedule state (with new extracted URLs or preserved fallbacks!)
     print("\n" + "=" * 60)
-    write_playlist(roxie_events)
+    save_schedule(schedule_state)
+    write_playlist(schedule_state)
 
 
 if __name__ == "__main__":
