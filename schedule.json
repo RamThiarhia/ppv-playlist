@@ -4,7 +4,7 @@
     "poster": "https://api.ppv.to/assets/thumb/add7ef457b61a6079ac2e0817a699166-thumbnail.jpg",
     "roxie_name": "Toronto Raptors vs Cleveland Cavaliers",
     "link": "https://roxiestreams.su/nba-streams-1",
-    "stream_url": "https://daffodil.underupturnip.net/nba.m3u8",
+    "stream_url": "https://daffodil.intelsystech.com.br/nba.m3u8",
     "display_name": "Toronto Raptors vs. Cleveland Cavaliers 04/21 07:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/add7ef457b61a6079ac2e0817a699166-thumbnail.jpg",
     "starts_at_iso": "2026-04-20T23:00:00+00:00"
@@ -16,14 +16,15 @@
     "link": "https://roxiestreams.su/nba-streams-2",
     "display_name": "Atlanta Hawks vs. New York Knicks 04/21 08:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/be7bc3a6bb6087e7256e9a876822cac1-thumbnail.jpg",
-    "starts_at_iso": "2026-04-21T00:00:00+00:00"
+    "starts_at_iso": "2026-04-21T00:00:00+00:00",
+    "stream_url": "https://daffodil.appmissao.com.br/nba.m3u8"
   },
   {
     "name": "Minnesota Timberwolves vs. Denver Nuggets",
     "poster": "https://api.ppv.to/assets/thumb/555361521b69582af2002f23462440bc-thumbnail.jpg",
     "roxie_name": "Minnesota Timberwolves vs Denver Nuggets",
     "link": "https://roxiestreams.su/nba-streams-3",
-    "stream_url": "https://daffodil.marllonferreira.space/nba2.m3u8",
+    "stream_url": "https://daffodil.underupturnip.net/nba2.m3u8",
     "display_name": "Minnesota Timberwolves vs. Denver Nuggets 04/21 10:30 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/555361521b69582af2002f23462440bc-thumbnail.jpg",
     "starts_at_iso": "2026-04-21T02:30:00+00:00"
