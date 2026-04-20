@@ -1,21 +1,16 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/623402ea37b792cf33fe1a66bdf90af4-thumbnail.jpg" group-title="NBA",Philadelphia 76ers vs. Boston Celtics 04/20 01:00 AM PHT
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/add7ef457b61a6079ac2e0817a699166-thumbnail.jpg" group-title="NBA",Toronto Raptors vs. Cleveland Cavaliers 04/21 07:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1a472aee0722fae8e07a28263bf27364-thumbnail.jpg" group-title="NBA",Phoenix Suns vs. Oklahoma City Thunder 04/20 03:30 AM PHT
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/be7bc3a6bb6087e7256e9a876822cac1-thumbnail.jpg" group-title="NBA",Atlanta Hawks vs. New York Knicks 04/21 08:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.appmissao.com.br/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/c868518b162c404ae01031448f4abc04-thumbnail.jpg" group-title="NBA",Orlando Magic vs. Detroit Pistons 04/20 06:30 AM PHT
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/555361521b69582af2002f23462440bc-thumbnail.jpg" group-title="NBA",Minnesota Timberwolves vs. Denver Nuggets 04/21 10:30 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-3
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.appmissao.com.br/nba2.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ad231e588681fdb8303abd4f5c2c98d9-thumbnail.jpg" group-title="NBA",Portland Trail Blazers vs. San Antonio Spurs 04/20 09:00 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-4
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.underupturnip.net/nba2.m3u8
+https://daffodil.marllonferreira.space/nba2.m3u8
