@@ -15,7 +15,8 @@
     "link": "https://roxiestreams.su/nba-streams-2",
     "display_name": "Portland Trail Blazers vs. San Antonio Spurs 04/22 08:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/1e8fe3afdb81c09be40b0460e32d5214-thumbnail.jpg",
-    "starts_at_iso": "2026-04-22T00:00:00+00:00"
+    "starts_at_iso": "2026-04-22T00:00:00+00:00",
+    "stream_url": "https://daffodil.intelsystech.com.br/nba2.m3u8"
   },
   {
     "name": "Houston Rockets vs. Los Angeles Lakers",
@@ -24,6 +25,7 @@
     "link": "https://roxiestreams.su/nba-streams-3",
     "display_name": "Houston Rockets vs. Los Angeles Lakers 04/22 10:30 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/14e161fd1e2f53b2acf2622381e8a984-thumbnail.jpg",
-    "starts_at_iso": "2026-04-22T02:30:00+00:00"
+    "starts_at_iso": "2026-04-22T02:30:00+00:00",
+    "stream_url": "https://daffodil.underupturnip.net/nba2.m3u8"
   }
 ]
