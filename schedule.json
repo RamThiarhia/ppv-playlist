@@ -1,32 +1,21 @@
 [
   {
-    "name": "Philadelphia 76ers vs. Boston Celtics",
-    "poster": "https://api.ppv.to/assets/thumb/81623aab9348babe6126c5212ea43b0d-thumbnail.jpg",
-    "roxie_name": "Philadelphia 76ers vs Boston Celtics",
+    "name": "Orlando Magic vs. Detroit Pistons",
+    "poster": "https://api.ppv.to/assets/thumb/5a1989b847f4d7a9161e93d7d94c2e6c-thumbnail.jpg",
+    "roxie_name": "Orlando Magic vs Detroit Pistons",
     "link": "https://roxiestreams.su/nba-streams-1",
-    "display_name": "Philadelphia 76ers vs. Boston Celtics 04/22 07:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/81623aab9348babe6126c5212ea43b0d-thumbnail.jpg",
-    "starts_at_iso": "2026-04-21T23:00:00+00:00",
-    "stream_url": "https://daffodil.underupturnip.net/nba.m3u8"
+    "stream_url": "https://daffodil.marllonferreira.space/nba.m3u8",
+    "display_name": "Orlando Magic vs. Detroit Pistons 04/23 07:00 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/5a1989b847f4d7a9161e93d7d94c2e6c-thumbnail.jpg",
+    "starts_at_iso": "2026-04-22T23:00:00+00:00"
   },
   {
-    "name": "Portland Trail Blazers vs. San Antonio Spurs",
-    "poster": "https://api.ppv.to/assets/thumb/1e8fe3afdb81c09be40b0460e32d5214-thumbnail.jpg",
-    "roxie_name": "Portland Trail Blazers vs San Antonio Spurs",
+    "name": "Phoenix Suns vs. Oklahoma City Thunder",
+    "poster": "https://api.ppv.to/assets/thumb/1434289e563038950f5f0a5c37d46570-thumbnail.jpg",
+    "roxie_name": "Phoenix Suns vs Oklahoma City Thunder",
     "link": "https://roxiestreams.su/nba-streams-2",
-    "display_name": "Portland Trail Blazers vs. San Antonio Spurs 04/22 08:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/1e8fe3afdb81c09be40b0460e32d5214-thumbnail.jpg",
-    "starts_at_iso": "2026-04-22T00:00:00+00:00",
-    "stream_url": "https://daffodil.marllonferreira.space/nba2.m3u8"
-  },
-  {
-    "name": "Houston Rockets vs. Los Angeles Lakers",
-    "poster": "https://api.ppv.to/assets/thumb/14e161fd1e2f53b2acf2622381e8a984-thumbnail.jpg",
-    "roxie_name": "Houston Rockets vs Los Angeles Lakers",
-    "link": "https://roxiestreams.su/nba-streams-3",
-    "display_name": "Houston Rockets vs. Los Angeles Lakers 04/22 10:30 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/14e161fd1e2f53b2acf2622381e8a984-thumbnail.jpg",
-    "starts_at_iso": "2026-04-22T02:30:00+00:00",
-    "stream_url": "https://daffodil.appmissao.com.br/nba2.m3u8"
+    "display_name": "Phoenix Suns vs. Oklahoma City Thunder 04/23 09:30 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/1434289e563038950f5f0a5c37d46570-thumbnail.jpg",
+    "starts_at_iso": "2026-04-23T01:30:00+00:00"
   }
 ]
