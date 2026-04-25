@@ -7,7 +7,7 @@
     "display_name": "Boston Celtics vs. Philadelphia 76ers 04/25 07:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/93f881d27158b0984996941335d8139e-thumbnail.jpg",
     "starts_at_iso": "2026-04-24T23:00:00+00:00",
-    "stream_url": "https://daffodil.riyogya.xyz/nba.m3u8"
+    "stream_url": "https://daffodil.marllonferreira.space/nba.m3u8"
   },
   {
     "name": "Los Angeles Lakers vs. Houston Rockets",
@@ -17,7 +17,7 @@
     "display_name": "Los Angeles Lakers vs. Houston Rockets 04/25 08:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/7f58fd4bde56202e7e3ad5798ef9dc3d-thumbnail.jpg",
     "starts_at_iso": "2026-04-25T00:00:00+00:00",
-    "stream_url": "https://602.marllonferreira.space/nba2.m3u8"
+    "stream_url": "https://daffodil.marllonferreira.space/nba2.m3u8"
   },
   {
     "name": "San Antonio Spurs vs. Portland Trail Blazers",
@@ -27,6 +27,6 @@
     "display_name": "San Antonio Spurs vs. Portland Trail Blazers 04/25 10:30 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/63385e60e324f208715898168944a85f-thumbnail.jpg",
     "starts_at_iso": "2026-04-25T02:30:00+00:00",
-    "stream_url": "https://602.oxfordcollegesnd.com/nba2.m3u8"
+    "stream_url": "https://daffodil.marllonferreira.space/nba2.m3u8"
   }
 ]
