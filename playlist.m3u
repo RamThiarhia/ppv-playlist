@@ -1,21 +1,21 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg" group-title="NBA",Cleveland Cavaliers vs. Toronto Raptors 04/27 01:00 AM PHT
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/3986a4665b9a2231a2b5a402c1208b3b-thumbnail.jpg" group-title="NBA",Nigeria vs. Minnesota Lynx 04/28 08:00 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg" group-title="NBA",Detroit Pistons vs. Orlando Magic 04/28 08:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.shoncine.com/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/63385e60e324f208715898168944a85f-thumbnail.jpg" group-title="NBA",San Antonio Spurs vs. Portland Trail Blazers 04/27 03:30 AM PHT
+https://daffodil.nimesh.eu.cc/nba.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1eed6c8c35b146c925fbec08ddcbbaad-thumbnail.jpg" group-title="NBA",Oklahoma City Thunder vs. Phoenix Suns 04/28 09:30 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.nimesh.eu.cc/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/93f881d27158b0984996941335d8139e-thumbnail.jpg" group-title="NBA",Boston Celtics vs. Philadelphia 76ers 04/27 07:00 AM PHT
+https://daffodil.shoncine.com/nba.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/723882ee8b91847985c72c90735b24d6-thumbnail.jpg" group-title="NBA",Minnesota Timberwolves vs. Denver Nuggets 04/28 10:30 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-3
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.shoncine.com/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/7f58fd4bde56202e7e3ad5798ef9dc3d-thumbnail.jpg" group-title="NBA",Los Angeles Lakers vs. Houston Rockets 04/27 09:30 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-4
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.nimesh.eu.cc/nba.m3u8
+http://no-stream-yet.com/dummy.m3u8
