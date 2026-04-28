@@ -1,21 +1,16 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/3986a4665b9a2231a2b5a402c1208b3b-thumbnail.jpg" group-title="NBA",Nigeria vs. Minnesota Lynx 04/28 08:00 AM PHT
-#EXTVLCOPT:http-referrer=
-#EXTVLCOPT:http-origin=
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-http://no-stream-yet.com/dummy.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg" group-title="NBA",Detroit Pistons vs. Orlando Magic 04/28 08:00 AM PHT
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/4ebbc6108f20ad6b195f2bf2233393ef-thumbnail.jpg" group-title="NBA",Philadelphia 76ers vs. Boston Celtics 04/29 07:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.shoncine.com/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/1eed6c8c35b146c925fbec08ddcbbaad-thumbnail.jpg" group-title="NBA",Oklahoma City Thunder vs. Phoenix Suns 04/28 09:30 AM PHT
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/35cb7ccd2d6f6a4e50afc63579f4f923-thumbnail.jpg" group-title="NBA",Atlanta Hawks vs. New York Knicks 04/29 08:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://602.nimesh.eu.cc/nba2.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/723882ee8b91847985c72c90735b24d6-thumbnail.jpg" group-title="NBA",Minnesota Timberwolves vs. Denver Nuggets 04/28 10:30 AM PHT
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/88adc0f65964761865a0074199bd9e80-thumbnail.jpg" group-title="NBA",Portland Trail Blazers vs. San Antonio Spurs 04/29 09:30 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-3
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.nimesh.eu.cc/nba.m3u8
+http://no-stream-yet.com/dummy.m3u8
