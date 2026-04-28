@@ -1,10 +1,12 @@
 """
-NBA M3U Playlist Generator — FIXED
+NBA M3U Playlist Generator — FIXED v2
 Fixes:
   1. Playwright used for roxie scraping (JS-rendered table)
   2. PPV time-matching anchored to roxie date, not just "now"
   3. CLAPPR timeout extended + network request interception as primary method
   4. Detailed diagnostics so failures are visible
+  5. [NEW] Multiple stream links per game — prioritize stream link 2 over stream link 1
+  6. [NEW] Stream validation to detect broken/looping streams
 """
 
 import asyncio
@@ -33,6 +35,9 @@ PAGE_TIMEOUT      = 30_000   # 30s page load
 CLAPPR_TIMEOUT    = 25_000   # extended: 25s (was 15s)
 BUTTON_TIMEOUT    = 5_000
 TIME_MATCH_WINDOW = 90       # minutes
+
+# Stream validation: how many seconds of segments to check before declaring broken
+STREAM_VALIDATE_TIMEOUT = 12  # seconds
 
 PHT = timezone(timedelta(hours=8))
 ET  = timezone(timedelta(hours=-4))  # EDT; change to -5 in winter (EST)
@@ -73,7 +78,6 @@ def load_schedule() -> list:
         with open(SCHEDULE_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
             for item in data:
-                # Convert ISO string back to datetime
                 if "starts_at_iso" in item and item["starts_at_iso"]:
                     item["starts_at"] = datetime.fromisoformat(item["starts_at_iso"])
                 else:
@@ -88,7 +92,6 @@ def load_schedule() -> list:
 def save_schedule(schedule: list):
     export_data = []
     for item in schedule:
-        # Create a shallow copy to dict without mutating original datetime
         row = dict(item)
         if "starts_at" in row and isinstance(row["starts_at"], datetime):
             row["starts_at_iso"] = row["starts_at"].isoformat()
@@ -101,6 +104,7 @@ def save_schedule(schedule: list):
 
 # ── Step 1: scrape roxiestreams NBA via Playwright ───────────────────────────
 # FIX #1: Use Playwright instead of requests so JS-rendered tables are visible.
+# FIX #5: Collect ALL stream links per game row (stream 1, stream 2, etc.)
 
 async def get_roxie_events_async(browser) -> list:
     print(f"Scraping {NBA_URL} with Playwright (JS-rendered) ...")
@@ -110,7 +114,6 @@ async def get_roxie_events_async(browser) -> list:
 
     try:
         await page.goto(NBA_URL, wait_until="networkidle", timeout=PAGE_TIMEOUT)
-        # Give any late JS a moment
         await page.wait_for_timeout(2_000)
 
         # Dump raw HTML for diagnosis
@@ -124,22 +127,34 @@ async def get_roxie_events_async(browser) -> list:
         if not rows:
             rows = await page.query_selector_all("table tbody tr")
         if not rows:
-            # Broad fallback: any row containing a link
             rows = await page.query_selector_all("tr:has(a)")
 
         print(f"  Rows found: {len(rows)}")
 
         for row in rows:
-            a = await row.query_selector("a")
-            if not a:
+            # ── Collect ALL links in this row ──────────────────────────────
+            all_anchors = await row.query_selector_all("a")
+            if not all_anchors:
                 continue
 
-            event_name = (await a.inner_text()).strip()
-            href       = await a.get_attribute("href")
-            if not href:
+            # Build list of (label_text, href) for every anchor in this row
+            stream_links = []
+            event_name   = ""
+            for anchor in all_anchors:
+                href = await anchor.get_attribute("href")
+                if not href:
+                    continue
+                text = (await anchor.inner_text()).strip()
+                full_link = urljoin(BASE_URL, href)
+                stream_links.append({"label": text, "link": full_link})
+                # Use first anchor text as the event name (usually the game title)
+                if not event_name:
+                    event_name = text
+
+            if not stream_links:
                 continue
 
-            # Extract time from any cell
+            # Extract time string from cells
             cells    = await row.query_selector_all("td")
             time_str = ""
             for cell in cells:
@@ -148,13 +163,28 @@ async def get_roxie_events_async(browser) -> list:
                     time_str = txt
                     break
 
-            full_link = urljoin(BASE_URL, href)
+            # ── Determine primary/fallback links ───────────────────────────
+            # Strategy: if there are 2+ links, stream link 2 (index 1) is preferred.
+            # Roxie typically has: [Stream 1 link, Stream 2 link] per row.
+            # We store link_primary = stream 2 (preferred), link_fallback = stream 1.
+            if len(stream_links) >= 2:
+                link_primary  = stream_links[1]["link"]   # Stream 2 — prioritized
+                link_fallback = stream_links[0]["link"]   # Stream 1 — fallback
+                print(f"  Found (2 streams): '{event_name}' @ '{time_str}'")
+                print(f"    Primary  (stream 2): {link_primary}")
+                print(f"    Fallback (stream 1): {link_fallback}")
+            else:
+                link_primary  = stream_links[0]["link"]   # Only stream available
+                link_fallback = None
+                print(f"  Found (1 stream): '{event_name}' @ '{time_str}' -> {link_primary}")
+
             events.append({
                 "roxie_name"    : event_name,
-                "link"          : full_link,
+                "link"          : link_primary,   # PRIMARY link used for extraction
+                "link_fallback" : link_fallback,  # FALLBACK link if primary fails/loops
+                "all_links"     : [s["link"] for s in stream_links],
                 "roxie_time_str": time_str,
             })
-            print(f"  Found: '{event_name}' @ '{time_str}'  -> {full_link}")
 
     except Exception as e:
         print(f"  FAIL scraping roxie: {e}")
@@ -209,15 +239,8 @@ def get_ppv_nba() -> list:
 
 
 # ── Step 3: match roxie → PPV ────────────────────────────────────────────────
-# FIX #2: Time matching now anchors to today's PHT date, not a raw "now + offsets"
-#         to avoid drift when the script runs near midnight or after a delay.
 
 def parse_roxie_time(time_str: str, reference_utc: datetime):
-    """
-    Convert a bare time string like '7:30 PM' (assumed ET) to a UTC datetime.
-    Tries today, tomorrow, and yesterday relative to reference_utc.
-    Returns a list of candidate UTC datetimes (best guesses first).
-    """
     m = re.search(r"(\d{1,2}):(\d{2})\s*(AM|PM)", time_str, re.I)
     if not m:
         return []
@@ -231,7 +254,6 @@ def parse_roxie_time(time_str: str, reference_utc: datetime):
     elif ampm == "AM" and hour == 12:
         hour = 0
 
-    # Anchor to the reference date in ET
     ref_et     = reference_utc.astimezone(ET)
     candidates = []
     for day_offset in (0, 1, -1):
@@ -277,7 +299,7 @@ def match_event_to_ppv(roxie_ev: dict, ppv_streams: list, reference_utc: datetim
             print(f"  [slug {best_slug_score:.0%}] '{roxie_name}' -> '{best_slug_stream['name']}'")
             return best_slug_stream
 
-    # Strategy 3 — time window match (FIX: uses reference_utc, not live now())
+    # Strategy 3 — time window match
     candidates = parse_roxie_time(time_str, reference_utc)
     window     = timedelta(minutes=TIME_MATCH_WINDOW)
     for s in ppv_streams:
@@ -290,83 +312,140 @@ def match_event_to_ppv(roxie_ev: dict, ppv_streams: list, reference_utc: datetim
     return None
 
 
-# ── Step 4: Playwright — extract stream URL ───────────────────────────────────
-# FIX #3: Use network request interception as PRIMARY method.
-#         clapprPlayer JS eval is now the fallback, not the primary.
+# ── Step 4a: validate a stream URL (detect broken/looping) ───────────────────
+# FIX #6: Fetch the .m3u8 manifest and check that it has real segments and
+#         that the segments are actually reachable (HTTP 200). A looping/broken
+#         stream often has duplicate segment filenames or returns HTTP errors.
 
-async def extract_stream(browser, event: dict, index: int, total: int):
-    link   = event["link"]
+async def validate_stream_url(stream_url: str, referer: str = "") -> bool:
+    """
+    Returns True if the stream looks healthy, False if broken/looping.
+    Checks:
+      - M3U8 manifest is reachable (HTTP 200)
+      - Manifest contains at least 1 media segment (.ts / .aac / .mp4)
+      - First segment is reachable (HTTP 200)
+      - No obvious looping (all segment names identical)
+    """
+    if not stream_url or "dummy" in stream_url:
+        return False
+
+    headers = {"User-Agent": USER_AGENT}
+    if referer:
+        headers["Referer"] = referer
+        headers["Origin"]  = get_origin(referer)
+
+    try:
+        # 1. Fetch the manifest
+        r = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: requests.get(stream_url, headers=headers, timeout=STREAM_VALIDATE_TIMEOUT)
+        )
+        if r.status_code != 200:
+            print(f"    [validate] manifest HTTP {r.status_code} — FAIL")
+            return False
+
+        content = r.text
+
+        # 2. Extract segment lines (non-comment, non-empty)
+        segments = [
+            line.strip() for line in content.splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        ]
+
+        if not segments:
+            print(f"    [validate] manifest has no segments — FAIL")
+            return False
+
+        # 3. Detect looping: all segment names are identical
+        unique_segs = set(segments)
+        if len(unique_segs) == 1 and len(segments) > 2:
+            print(f"    [validate] all {len(segments)} segments identical (looping) — FAIL")
+            return False
+
+        # 4. Check the first segment is reachable
+        first_seg = segments[0]
+        if not first_seg.startswith("http"):
+            # Resolve relative URL
+            base = stream_url.rsplit("/", 1)[0]
+            first_seg = f"{base}/{first_seg}"
+
+        seg_r = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: requests.head(first_seg, headers=headers, timeout=STREAM_VALIDATE_TIMEOUT, allow_redirects=True)
+        )
+        if seg_r.status_code not in (200, 206):
+            print(f"    [validate] first segment HTTP {seg_r.status_code} — FAIL")
+            return False
+
+        print(f"    [validate] {len(segments)} segments, unique={len(unique_segs)} — OK")
+        return True
+
+    except Exception as e:
+        print(f"    [validate] exception: {e} — FAIL")
+        return False
+
+
+# ── Step 4b: Playwright — extract stream URL from a page ─────────────────────
+
+async def _extract_from_page(browser, link: str) -> str | None:
+    """Extract a .m3u8 stream URL from a single Roxie stream page."""
     origin = get_origin(link)
-    name   = event["roxie_name"]
-
-    print(f"\n[{index}/{total}] Processing: {name}")
-    print(f"  URL: {link}")
 
     context = await browser.new_context(
         user_agent=USER_AGENT,
         extra_http_headers={"Referer": link, "Origin": origin},
     )
-    page       = await context.new_page()
-    stream_url = None
-
-    # --- PRIMARY: intercept network requests for .m3u8 URLs ---
+    page           = await context.new_page()
+    stream_url     = None
     intercepted_urls: list[str] = []
 
     def on_request(req):
         url = req.url
-        if ".m3u8" in url and "tracks" not in url:  # grab index.m3u8
-            intercepted_urls.append(url)
-        elif ".m3u8" in url:
+        if ".m3u8" in url:
             intercepted_urls.append(url)
 
     page.on("request", on_request)
 
     try:
-        print(f"  Loading page ...")
         resp = await page.goto(link, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT)
 
         if not resp or resp.status != 200:
-            print(f"  HTTP {resp.status if resp else 'none'} — skipping")
+            print(f"    HTTP {resp.status if resp else 'none'} — skipping page")
             return None
 
-        print(f"  Page loaded (HTTP {resp.status})")
         await page.wait_for_timeout(2_000)
 
         # Click stream button
         try:
             btn = page.locator("button.streambutton").first
             if await btn.is_visible(timeout=BUTTON_TIMEOUT):
-                print(f"  Clicking stream button ...")
                 await btn.click(force=True, timeout=BUTTON_TIMEOUT)
                 await page.wait_for_timeout(1_500)
             else:
-                print(f"  No stream button visible — clicking page centre")
                 await page.mouse.click(640, 360)
                 await page.wait_for_timeout(1_500)
         except Exception as e:
-            print(f"  Click warning: {e}")
+            print(f"    Click warning: {e}")
 
-        # Give the player time to fire network requests
         await page.wait_for_timeout(3_000)
 
-        # Check intercepted first
         if intercepted_urls:
-            stream_url = intercepted_urls[-1]  # latest is most likely the real one
-            print(f"  [intercept] {stream_url[:90]}")
+            # Prefer index.m3u8 entries; fall back to last intercepted
+            index_urls = [u for u in intercepted_urls if "index.m3u8" in u]
+            stream_url = (index_urls or intercepted_urls)[-1]
+            print(f"    [intercept] {stream_url[:90]}")
         else:
-            # Fallback: wait for clapprPlayer (extended timeout)
-            print(f"  No intercepted .m3u8 yet — waiting for clapprPlayer ({CLAPPR_TIMEOUT//1000}s) ...")
+            print(f"    No intercepted .m3u8 — waiting for clapprPlayer ({CLAPPR_TIMEOUT//1000}s) ...")
             try:
                 await page.wait_for_function(
                     "() => typeof clapprPlayer !== 'undefined' && clapprPlayer.options && clapprPlayer.options.source",
                     timeout=CLAPPR_TIMEOUT,
                 )
                 stream_url = await page.evaluate("() => clapprPlayer.options.source")
-                print(f"  [clapprPlayer] {stream_url}")
+                print(f"    [clapprPlayer] {stream_url}")
             except PWTimeoutError:
-                print(f"  clapprPlayer timed out — trying JS fallbacks ...")
+                print(f"    clapprPlayer timed out — trying JS fallbacks ...")
 
-        # JS fallbacks
         if not stream_url:
             for expr in [
                 "window.player?.options?.source",
@@ -378,18 +457,17 @@ async def extract_stream(browser, event: dict, index: int, total: int):
                     val = await page.evaluate(expr)
                     if val and isinstance(val, str) and ".m3u8" in val:
                         stream_url = val
-                        print(f"  [JS fallback] {val[:90]}")
+                        print(f"    [JS fallback] {val[:90]}")
                         break
                 except Exception:
                     pass
 
-        # Last resort: check intercepted list again (may have arrived late)
         if not stream_url and intercepted_urls:
             stream_url = intercepted_urls[-1]
-            print(f"  [late intercept] {stream_url[:90]}")
+            print(f"    [late intercept] {stream_url[:90]}")
 
     except Exception as e:
-        print(f"  Error: {e}")
+        print(f"    Error loading page: {e}")
     finally:
         page.remove_listener("request", on_request)
         try:
@@ -400,9 +478,60 @@ async def extract_stream(browser, event: dict, index: int, total: int):
 
     if stream_url:
         stream_url = fix_url(stream_url)
-        print(f"  [OK] -> {stream_url[:90]}")
+
+    return stream_url
+
+
+# ── Step 4c: extract with fallback logic ─────────────────────────────────────
+# FIX #5: Try primary link (stream 2) first, validate it.
+#         If invalid/broken, try fallback link (stream 1).
+
+async def extract_stream(browser, event: dict, index: int, total: int):
+    name          = event["roxie_name"]
+    link_primary  = event.get("link")           # Stream 2 (prioritized)
+    link_fallback = event.get("link_fallback")  # Stream 1 (fallback)
+
+    print(f"\n[{index}/{total}] Processing: {name}")
+
+    # ── Try PRIMARY link (Stream 2) ──────────────────────────────────────────
+    stream_url = None
+    if link_primary:
+        print(f"  Trying PRIMARY (stream 2): {link_primary}")
+        raw = await _extract_from_page(browser, link_primary)
+        if raw:
+            print(f"  Validating stream 2 URL ...")
+            ok = await validate_stream_url(raw, referer=link_primary)
+            if ok:
+                stream_url = raw
+                print(f"  [OK] Stream 2 is healthy — using it.")
+            else:
+                print(f"  [WARN] Stream 2 failed validation — trying stream 1 fallback ...")
+        else:
+            print(f"  [WARN] Stream 2 extraction failed — trying stream 1 fallback ...")
+
+    # ── Try FALLBACK link (Stream 1) if primary failed ───────────────────────
+    if not stream_url and link_fallback:
+        print(f"  Trying FALLBACK (stream 1): {link_fallback}")
+        raw = await _extract_from_page(browser, link_fallback)
+        if raw:
+            print(f"  Validating stream 1 URL ...")
+            ok = await validate_stream_url(raw, referer=link_fallback)
+            if ok:
+                stream_url = raw
+                print(f"  [OK] Stream 1 is healthy — using it.")
+                # Update the event link so the playlist referrer is correct
+                event["link"] = link_fallback
+            else:
+                print(f"  [WARN] Stream 1 also failed validation — saving raw URL as last resort.")
+                stream_url = raw  # save anyway; something > nothing
+                event["link"] = link_fallback
+        else:
+            print(f"  [FAIL] Both streams failed extraction for '{name}'")
+
+    if stream_url:
+        print(f"  Final URL: {stream_url[:90]}")
     else:
-        print(f"  [FAIL] no stream URL found for '{name}'")
+        print(f"  [FAIL] No stream URL found for '{name}'")
 
     return stream_url
 
@@ -410,8 +539,8 @@ async def extract_stream(browser, event: dict, index: int, total: int):
 # ── Step 5: write playlist ────────────────────────────────────────────────────
 
 def write_playlist(entries: list):
-    lines   = ["#EXTM3U"]
-    ok      = 0
+    lines = ["#EXTM3U"]
+    ok    = 0
 
     for e in entries:
         url = e.get("stream_url") or "http://no-stream-yet.com/dummy.m3u8"
@@ -437,12 +566,11 @@ def write_playlist(entries: list):
 # ── main ──────────────────────────────────────────────────────────────────────
 
 async def main():
-    # Snapshot "now" ONCE — used as the stable reference throughout
     now_utc = datetime.now(tz=timezone.utc)
     now_pht = now_utc.astimezone(PHT)
     print(f"UTC: {now_utc.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"PHT: {now_pht.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)")
-    
+
     is_full_fetch = (now_pht.hour == 0) or ("--full" in sys.argv)
     print(f"MODE: {'FULL FETCH (12:00 AM PHT)' if is_full_fetch else 'UPDATE (Roxie streams only)'}")
     print("=" * 60)
@@ -467,8 +595,6 @@ async def main():
                 write_playlist([])
                 await browser.close()
                 return
-            
-            # Initialize schedule state with fresh PPV data
             schedule_state = ppv_streams
         else:
             print("1. [UPDATE] Loading schedule.json ...")
@@ -489,14 +615,14 @@ async def main():
         for ev in roxie_events:
             ppv = match_event_to_ppv(ev, schedule_state, reference_utc=now_utc)
             if ppv:
-                # Store the latest Roxie metadata/link on the matched schedule item
-                ppv["roxie_name"] = ev["roxie_name"]
-                ppv["link"] = ev["link"]
+                ppv["roxie_name"]    = ev["roxie_name"]
+                ppv["link"]          = ev["link"]           # primary (stream 2)
+                ppv["link_fallback"] = ev.get("link_fallback")  # fallback (stream 1)
+                ppv["all_links"]     = ev.get("all_links", [])
 
-        # Sort schedule by start time
         schedule_state.sort(key=lambda x: x.get("starts_at") or now_utc)
 
-        # 4. Extract streams sequentially for matched items
+        # 4. Extract streams with stream-2-first priority + validation fallback
         print("=" * 60)
         to_extract = [s for s in schedule_state if s.get("link")]
         print(f"Extracting streams for {len(to_extract)} scheduled events (out of {len(schedule_state)} total) ...")
@@ -505,21 +631,21 @@ async def main():
             url = await extract_stream(browser, s, i, len(to_extract))
             if url:
                 s["stream_url"] = url
-            # If `url` is None (fails extraction or timeout), we intentionally DO NOT overwrite `s.get("stream_url")`
-            # This maintains whatever stream_url was previously saved as the fallback.
+            # If url is None, preserve whatever was previously saved
 
-        # Prepare formatting for the final playlist output
+        # Prepare display names
         for s in schedule_state:
-            time_str = fmt_time_pht(s.get('starts_at')).strip()
-            if time_str and time_str in s['name']:
-                s["display_name"] = s['name']
+            time_str = fmt_time_pht(s.get("starts_at")).strip()
+            base_name = s.get("name", s.get("roxie_name", "Unknown"))
+            if time_str and time_str in base_name:
+                s["display_name"] = base_name
             else:
-                s["display_name"] = f"{s['name']} {time_str}".strip()
+                s["display_name"] = f"{base_name} {time_str}".strip()
             s["logo"] = s.get("poster", "")
 
         await browser.close()
 
-    # 5. Write playlist & final schedule state (with new extracted URLs or preserved fallbacks!)
+    # 5. Write playlist & schedule state
     print("\n" + "=" * 60)
     save_schedule(schedule_state)
     write_playlist(schedule_state)
