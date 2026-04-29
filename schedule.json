@@ -5,23 +5,9 @@
     "roxie_name": "Portland Trail Blazers vs San Antonio Spurs",
     "link": "https://roxiestreams.su/nba-streams-3",
     "stream2_url": null,
-    "stream_url": "https://daffodil.nimesh.eu.cc/nba.m3u8",
+    "stream_url": "https://daffodil.ceylonnet.com/nba.m3u8",
     "display_name": "Orlando Magic vs. Detroit Pistons 04/30 07:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/5a1989b847f4d7a9161e93d7d94c2e6c-thumbnail.jpg",
-    "starts_at_iso": "2026-04-29T23:00:00+00:00"
-  },
-  {
-    "name": "Connecticut Sun vs. Toronto Tempo",
-    "poster": "https://api.ppv.to/assets/thumb/6a0ab7fe9db6f257a75d74d4e2d11d15-thumbnail.jpg",
-    "display_name": "Connecticut Sun vs. Toronto Tempo 04/30 07:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/6a0ab7fe9db6f257a75d74d4e2d11d15-thumbnail.jpg",
-    "starts_at_iso": "2026-04-29T23:00:00+00:00"
-  },
-  {
-    "name": "Atlanta Dream vs. Chicago Sky",
-    "poster": "https://api.ppv.to/assets/thumb/23fd2c9bfae90bdfd0677240d6c3b9c1-thumbnail.jpg",
-    "display_name": "Atlanta Dream vs. Chicago Sky 04/30 07:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/23fd2c9bfae90bdfd0677240d6c3b9c1-thumbnail.jpg",
     "starts_at_iso": "2026-04-29T23:00:00+00:00"
   },
   {
@@ -36,20 +22,6 @@
     "poster": "https://api.ppv.to/assets/thumb/ad8695a74c4797a8d26576aafc334047-thumbnail.jpg",
     "display_name": "Houston Rockets vs. Los Angeles Lakers 04/30 10:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/ad8695a74c4797a8d26576aafc334047-thumbnail.jpg",
-    "starts_at_iso": "2026-04-30T02:00:00+00:00"
-  },
-  {
-    "name": "Portland Fire vs. Seattle Storm",
-    "poster": "https://api.ppv.to/assets/thumb/c26657656b20056aa4602a063c8140c9-thumbnail.jpg",
-    "display_name": "Portland Fire vs. Seattle Storm 04/30 10:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/c26657656b20056aa4602a063c8140c9-thumbnail.jpg",
-    "starts_at_iso": "2026-04-30T02:00:00+00:00"
-  },
-  {
-    "name": "Japan vs. Phoenix Mercury",
-    "poster": "https://api.ppv.to/assets/thumb/83311daf23598eb7f2e806b14d044527-thumbnail.jpg",
-    "display_name": "Japan vs. Phoenix Mercury 04/30 10:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/83311daf23598eb7f2e806b14d044527-thumbnail.jpg",
     "starts_at_iso": "2026-04-30T02:00:00+00:00"
   }
 ]
