@@ -1,16 +1,36 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/4ebbc6108f20ad6b195f2bf2233393ef-thumbnail.jpg" group-title="NBA",Philadelphia 76ers vs. Boston Celtics 04/29 07:00 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/5a1989b847f4d7a9161e93d7d94c2e6c-thumbnail.jpg" group-title="NBA",Orlando Magic vs. Detroit Pistons 04/30 07:00 AM PHT
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-3
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.ceylonnet.com/nba.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/35cb7ccd2d6f6a4e50afc63579f4f923-thumbnail.jpg" group-title="NBA",Atlanta Hawks vs. New York Knicks 04/29 08:00 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
-#EXTVLCOPT:http-origin=https://roxiestreams.su
+https://daffodil.shoncine.com/nba.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/6a0ab7fe9db6f257a75d74d4e2d11d15-thumbnail.jpg" group-title="NBA",Connecticut Sun vs. Toronto Tempo 04/30 07:00 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.ceylonnet.com/nba2.m3u8
-#EXTINF:-1 tvg-logo="" group-title="NBA",Portland Trail Blazers vs San Antonio Spurs
-#EXTVLCOPT:http-referrer=https://streamcorner.vu/nba/0042500155
-#EXTVLCOPT:http-origin=https://streamcorner.vu
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/23fd2c9bfae90bdfd0677240d6c3b9c1-thumbnail.jpg" group-title="NBA",Atlanta Dream vs. Chicago Sky 04/30 07:00 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://cdn14.zohanayaan.com:1686/hls/msanantoniospurs.m3u8?md5=59mVujLbxU6MKS5GDMmIRA&expires=1777443457
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ae2e241dfb9c009b5d7a71a3548c51f7-thumbnail.jpg" group-title="NBA",Toronto Raptors vs. Cleveland Cavaliers 04/30 07:30 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ad8695a74c4797a8d26576aafc334047-thumbnail.jpg" group-title="NBA",Houston Rockets vs. Los Angeles Lakers 04/30 10:00 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/c26657656b20056aa4602a063c8140c9-thumbnail.jpg" group-title="NBA",Portland Fire vs. Seattle Storm 04/30 10:00 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+http://no-stream-yet.com/dummy.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/83311daf23598eb7f2e806b14d044527-thumbnail.jpg" group-title="NBA",Japan vs. Phoenix Mercury 04/30 10:00 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+http://no-stream-yet.com/dummy.m3u8
