@@ -25,7 +25,7 @@
     "display_name": "Atlanta Hawks vs. New York Knicks 04/29 08:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/35cb7ccd2d6f6a4e50afc63579f4f923-thumbnail.jpg",
     "starts_at_iso": "2026-04-29T00:00:00+00:00",
-    "stream_url": "https://daffodil.shoncine.com/nba2.m3u8"
+    "stream_url": "https://daffodil.ceylonnet.com/nba2.m3u8"
   },
   {
     "name": "Portland Trail Blazers vs. San Antonio Spurs",
@@ -39,6 +39,6 @@
     "display_name": "Portland Trail Blazers vs. San Antonio Spurs 04/29 09:30 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/88adc0f65964761865a0074199bd9e80-thumbnail.jpg",
     "starts_at_iso": "2026-04-29T01:30:00+00:00",
-    "stream_url": "https://daffodil.shoncine.com/nba.m3u8"
+    "stream_url": "https://daffodil.ceylonnet.com/nba.m3u8"
   }
 ]
