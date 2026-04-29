@@ -7,7 +7,8 @@
     "stream2_url": null,
     "display_name": "Orlando Magic vs. Detroit Pistons 04/30 07:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/5a1989b847f4d7a9161e93d7d94c2e6c-thumbnail.jpg",
-    "starts_at_iso": "2026-04-29T23:00:00+00:00"
+    "starts_at_iso": "2026-04-29T23:00:00+00:00",
+    "stream_url": "https://daffodil.nimesh.eu.cc/nba.m3u8"
   },
   {
     "name": "Toronto Raptors vs. Cleveland Cavaliers",
@@ -17,7 +18,8 @@
     "starts_at_iso": "2026-04-29T23:30:00+00:00",
     "roxie_name": "Toronto Raptors vs Cleveland Cavaliers",
     "link": "https://roxiestreams.su/nba-streams-2",
-    "stream2_url": null
+    "stream2_url": null,
+    "stream_url": "https://daffodil.nimesh.eu.cc/nba2.m3u8"
   },
   {
     "name": "Houston Rockets vs. Los Angeles Lakers",
@@ -28,6 +30,6 @@
     "roxie_name": "Houston Rockets vs Los Angeles Lakers",
     "link": "https://roxiestreams.su/nba-streams-3",
     "stream2_url": null,
-    "stream_url": "https://daffodil.ceylonnet.com/nba.m3u8"
+    "stream_url": "https://daffodil.nimesh.eu.cc/nba.m3u8"
   }
 ]
