@@ -46,19 +46,22 @@ USER_AGENT = (
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
+# Full NBA team names only — no partial words that could match WNBA/other leagues
 NBA_TEAMS = {
-    "atlanta", "hawks", "boston", "celtics", "brooklyn", "nets",
-    "charlotte", "hornets", "chicago", "bulls", "cleveland", "cavaliers",
-    "dallas", "mavericks", "denver", "nuggets", "detroit", "pistons",
-    "golden state", "warriors", "houston", "rockets", "indiana", "pacers",
-    "la clippers", "clippers", "los angeles", "lakers", "memphis", "grizzlies",
-    "miami", "heat", "milwaukee", "bucks", "minnesota", "timberwolves",
-    "new orleans", "pelicans", "new york", "knicks", "oklahoma", "thunder",
-    "orlando", "magic", "philadelphia", "sixers", "phoenix", "suns",
-    "portland", "blazers", "sacramento", "kings", "san antonio", "spurs",
-    "toronto", "raptors", "utah", "jazz", "washington", "wizards",
-    "oklahoma city",
+    "atlanta hawks", "boston celtics", "brooklyn nets", "charlotte hornets",
+    "chicago bulls", "cleveland cavaliers", "dallas mavericks", "denver nuggets",
+    "detroit pistons", "golden state warriors", "houston rockets", "indiana pacers",
+    "la clippers", "los angeles clippers", "los angeles lakers", "memphis grizzlies",
+    "miami heat", "milwaukee bucks", "minnesota timberwolves", "new orleans pelicans",
+    "new york knicks", "oklahoma city thunder", "orlando magic", "philadelphia 76ers",
+    "phoenix suns", "portland trail blazers", "sacramento kings", "san antonio spurs",
+    "toronto raptors", "utah jazz", "washington wizards",
 }
+
+def is_nba_game(name: str) -> bool:
+    """Return True only if at least one side of the matchup is a known NBA team."""
+    n = name.lower()
+    return any(team in n for team in NBA_TEAMS)
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -192,8 +195,7 @@ async def get_roxie_events_async(browser) -> list:
                     print(f"    Stream 2 onclick has no direct URL: {onclick2[:80]}")
 
             # Skip non-NBA games
-            name_lower = event_name.lower()
-            if not any(team in name_lower for team in NBA_TEAMS):
+            if not is_nba_game(event_name):
                 print(f"  Skipping non-NBA: '{event_name}'")
                 continue
 
@@ -244,7 +246,7 @@ def get_ppv_nba() -> list:
                         "poster"   : s.get("poster", ""),
                         "starts_at": datetime.fromtimestamp(ts, tz=timezone.utc),
                     }
-                    if not any(team in entry["name"].lower() for team in NBA_TEAMS):
+                    if not is_nba_game(entry["name"]):
                         print(f"  Skipping non-NBA PPV: '{entry['name']}'")
                         continue
                     nba_streams.append(entry)
