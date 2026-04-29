@@ -4,13 +4,15 @@
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.shoncine.com/nba.m3u8
+
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/35cb7ccd2d6f6a4e50afc63579f4f923-thumbnail.jpg" group-title="NBA",Atlanta Hawks vs. New York Knicks 04/29 08:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.ceylonnet.com/nba2.m3u8
+
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/88adc0f65964761865a0074199bd9e80-thumbnail.jpg" group-title="NBA",Portland Trail Blazers vs. San Antonio Spurs 04/29 09:30 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-3
-#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-referrer=https://streamcorner.vu/nba/0042500155
+#EXTVLCOPT:http-origin=https://streamcorner.vu
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.nimesh.eu.cc/nba.m3u8
+https://lpnba.akamaized.net/live-pz/p/hls-wvpr/g0042500155por1000445sas/v3-221.m3u8?vpmute=0&addUserInfo=1&State=GP&PostalCode=&Zip=&LatLongRadius=&ISO3166=&ads=mr&csid=nba.com_live_nba-tv_web&afid=&prof=%3Anba_web_video&pcaid=nba-tv_live_default_asset&mcaid=&bo=no&_fw_vcid2=&_fw_gdpr=1&_fw_gdpr_consent=&_fw_us_privacy=1---&_fw_is_lat=0&_is_lat=0&_fw_ae=&_fw_h_user_agent=Mozilla%2F5.0%20(Windows%20NT%2010.0%3B%20Win64%3B%20x64)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F135.0.0.0%20Safari%2F537.36%20Edg%2F135.0.0.0&dai-debug=false&sessionId=495ec37a-6f8b-4c8c-976c-314b58b17a2c
