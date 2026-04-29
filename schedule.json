@@ -24,7 +24,8 @@
     ],
     "display_name": "Atlanta Hawks vs. New York Knicks 04/29 08:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/35cb7ccd2d6f6a4e50afc63579f4f923-thumbnail.jpg",
-    "starts_at_iso": "2026-04-29T00:00:00+00:00"
+    "starts_at_iso": "2026-04-29T00:00:00+00:00",
+    "stream_url": "https://daffodil.shoncine.com/nba2.m3u8"
   },
   {
     "name": "Portland Trail Blazers vs. San Antonio Spurs",
