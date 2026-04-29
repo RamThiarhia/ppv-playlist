@@ -5,9 +5,6 @@ Fixes:
   2. PPV time-matching anchored to roxie date, not just "now"
   3. CLAPPR timeout extended + network request interception as primary method
   4. Detailed diagnostics so failures are visible
-  5. [NEW] Stream links are in <button onclick="showPlayer(...)"> tags.
-           If 2 buttons exist, Stream 2's URL is used directly (it's hardcoded
-           in the onclick). If only 1 button, falls back to getRandomStream().
 """
 
 import asyncio
@@ -33,7 +30,7 @@ PPV_MIRRORS = [
 OUTPUT_FILE       = "playlist.m3u"
 SCHEDULE_FILE     = "schedule.json"
 PAGE_TIMEOUT      = 30_000   # 30s page load
-CLAPPR_TIMEOUT    = 25_000   # 25s
+CLAPPR_TIMEOUT    = 25_000   # extended: 25s (was 15s)
 BUTTON_TIMEOUT    = 5_000
 TIME_MATCH_WINDOW = 90       # minutes
 
@@ -45,23 +42,6 @@ USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/124.0.0.0 Safari/537.36"
 )
-
-# Full NBA team names only — no partial words that could match WNBA/other leagues
-NBA_TEAMS = {
-    "atlanta hawks", "boston celtics", "brooklyn nets", "charlotte hornets",
-    "chicago bulls", "cleveland cavaliers", "dallas mavericks", "denver nuggets",
-    "detroit pistons", "golden state warriors", "houston rockets", "indiana pacers",
-    "la clippers", "los angeles clippers", "los angeles lakers", "memphis grizzlies",
-    "miami heat", "milwaukee bucks", "minnesota timberwolves", "new orleans pelicans",
-    "new york knicks", "oklahoma city thunder", "orlando magic", "philadelphia 76ers",
-    "phoenix suns", "portland trail blazers", "sacramento kings", "san antonio spurs",
-    "toronto raptors", "utah jazz", "washington wizards",
-}
-
-def is_nba_game(name: str) -> bool:
-    """Return True only if at least one side of the matchup is a known NBA team."""
-    n = name.lower()
-    return any(team in n for team in NBA_TEAMS)
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -93,6 +73,7 @@ def load_schedule() -> list:
         with open(SCHEDULE_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
             for item in data:
+                # Convert ISO string back to datetime
                 if "starts_at_iso" in item and item["starts_at_iso"]:
                     item["starts_at"] = datetime.fromisoformat(item["starts_at_iso"])
                 else:
@@ -107,6 +88,7 @@ def load_schedule() -> list:
 def save_schedule(schedule: list):
     export_data = []
     for item in schedule:
+        # Create a shallow copy to dict without mutating original datetime
         row = dict(item)
         if "starts_at" in row and isinstance(row["starts_at"], datetime):
             row["starts_at_iso"] = row["starts_at"].isoformat()
@@ -117,24 +99,8 @@ def save_schedule(schedule: list):
     print(f"Saved {len(export_data)} events state to {SCHEDULE_FILE}")
 
 
-def parse_stream_url_from_onclick(onclick: str) -> str | None:
-    """
-    Extract the stream URL from a button onclick like:
-      showPlayer('clappr', 'https://...manifest/video.m3u8')
-      showPlayer('clappr', getRandomStream('nba.m3u8', 'daffodil'))
-    Returns the direct URL string if found, else None.
-    """
-    # Match a direct https:// URL inside the onclick
-    m = re.search(r"showPlayer\(['\"]clappr['\"],\s*['\"](\bhttps?://[^'\"]+)['\"]", onclick)
-    if m:
-        return m.group(1)
-    return None  # getRandomStream() or unrecognised — let the page handle it
-
-
 # ── Step 1: scrape roxiestreams NBA via Playwright ───────────────────────────
-# Stream links live in <button class="streambutton" onclick="showPlayer(...)">
-# Stream 1 uses getRandomStream(), Stream 2 has the URL hardcoded in onclick.
-# We always prefer Stream 2 (direct URL). If absent, fall back to Stream 1 page.
+# FIX #1: Use Playwright instead of requests so JS-rendered tables are visible.
 
 async def get_roxie_events_async(browser) -> list:
     print(f"Scraping {NBA_URL} with Playwright (JS-rendered) ...")
@@ -144,33 +110,50 @@ async def get_roxie_events_async(browser) -> list:
 
     try:
         await page.goto(NBA_URL, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+        # Give any late JS a moment
         await page.wait_for_timeout(2_000)
 
+        # Dump raw HTML for diagnosis
         html = await page.content()
         with open("roxie_debug.html", "w", encoding="utf-8") as f:
             f.write(html)
         print("  Saved roxie_debug.html for inspection")
 
+        # Try both known selectors
         rows = await page.query_selector_all("table#eventsTable tbody tr")
         if not rows:
             rows = await page.query_selector_all("table tbody tr")
         if not rows:
-            rows = await page.query_selector_all("tr:has(button.streambutton)")
+            # Broad fallback: any row containing a link
+            rows = await page.query_selector_all("tr:has(a)")
 
         print(f"  Rows found: {len(rows)}")
 
         for row in rows:
-            # Get the event name from the first <a> tag in the row
-            a = await row.query_selector("a")
-            event_name = (await a.inner_text()).strip() if a else ""
-            if not event_name:
+            all_links = await row.query_selector_all("a")
+            if not all_links:
                 continue
 
-            # Get the event page link (used as referrer / fallback)
-            href       = await a.get_attribute("href") if a else None
-            event_link = urljoin(BASE_URL, href) if href else ""
+            # Prioritize the second link if available, or one containing "Stream 2"
+            target_link = all_links[0]
+            if len(all_links) > 1:
+                found_s2 = False
+                for link_candidate in all_links:
+                    text = (await link_candidate.inner_text()).lower()
+                    if "stream 2" in text:
+                        target_link = link_candidate
+                        found_s2 = True
+                        break
+                if not found_s2:
+                    # Fallback: pick the second link if multiple exist
+                    target_link = all_links[1]
 
-            # Extract time string from cells
+            event_name = (await target_link.inner_text()).strip()
+            href       = await target_link.get_attribute("href")
+            if not href:
+                continue
+
+            # Extract time from any cell
             cells    = await row.query_selector_all("td")
             time_str = ""
             for cell in cells:
@@ -179,33 +162,13 @@ async def get_roxie_events_async(browser) -> list:
                     time_str = txt
                     break
 
-            # Find all streambuttons in this row
-            buttons = await row.query_selector_all("button.streambutton")
-            print(f"  '{event_name}' — {len(buttons)} stream button(s)")
-
-            stream2_url = None
-            has_stream2 = len(buttons) >= 2
-
-            if has_stream2:
-                onclick2    = await buttons[1].get_attribute("onclick") or ""
-                stream2_url = parse_stream_url_from_onclick(onclick2)
-                if stream2_url:
-                    print(f"    Stream 2 URL (direct): {stream2_url[:80]}")
-                else:
-                    print(f"    Stream 2 onclick has no direct URL: {onclick2[:80]}")
-
-            # Skip non-NBA games
-            if not is_nba_game(event_name):
-                print(f"  Skipping non-NBA: '{event_name}'")
-                continue
-
+            full_link = urljoin(BASE_URL, href)
             events.append({
                 "roxie_name"    : event_name,
-                "link"          : event_link,   # event page — used as referrer
-                "stream2_url"   : stream2_url,  # direct m3u8 if available
-                "has_stream2"   : has_stream2,
+                "link"          : full_link,
                 "roxie_time_str": time_str,
             })
+            print(f"  Found: '{event_name}' @ '{time_str}'  -> {full_link}")
 
     except Exception as e:
         print(f"  FAIL scraping roxie: {e}")
@@ -241,14 +204,22 @@ def get_ppv_nba() -> list:
                     ts = s.get("starts_at", 0)
                     if not ts:
                         continue
+
+                    uri_name = s.get("uri_name", "").lower()
+                    # Filter: must be in NBA category OR have nba/ prefix in uri_name
+                    # AND must not be WNBA
+                    if "wnba" in uri_name:
+                        continue
+                    
+                    is_nba = (cat.lower() == "nba") or uri_name.startswith("nba/")
+                    if not is_nba:
+                        continue
+
                     entry = {
                         "name"     : s.get("name", ""),
                         "poster"   : s.get("poster", ""),
                         "starts_at": datetime.fromtimestamp(ts, tz=timezone.utc),
                     }
-                    if not is_nba_game(entry["name"]):
-                        print(f"  Skipping non-NBA PPV: '{entry['name']}'")
-                        continue
                     nba_streams.append(entry)
                     print(f"  PPV: '{entry['name']}' @ {fmt_time_pht(entry['starts_at'])}")
 
@@ -263,8 +234,16 @@ def get_ppv_nba() -> list:
 
 
 # ── Step 3: match roxie → PPV ────────────────────────────────────────────────
+# FIX #2: Time matching now anchors to today's PHT date, not a raw "now + offsets"
+#         to avoid drift when the script runs near midnight or after a delay.
 
 def parse_roxie_time(time_str: str, reference_utc: datetime):
+    """
+    Convert a time string from Roxie to UTC.
+    The user confirms Roxie uses UTC.
+    We ignore the 'April 28' part if it conflicts, as the links are confirmed current.
+    """
+    # Extract just the time part: HH:MM AM/PM
     m = re.search(r"(\d{1,2}):(\d{2})\s*(AM|PM)", time_str, re.I)
     if not m:
         return []
@@ -278,14 +257,16 @@ def parse_roxie_time(time_str: str, reference_utc: datetime):
     elif ampm == "AM" and hour == 12:
         hour = 0
 
-    ref_et     = reference_utc.astimezone(ET)
+    # Assume UTC as per user
+    ref_utc = reference_utc
     candidates = []
+    # Try today, tomorrow, and yesterday in UTC to find the best match for the time
     for day_offset in (0, 1, -1):
         try:
-            dt_et = ref_et.replace(
+            dt_utc = ref_utc.replace(
                 hour=hour, minute=minute, second=0, microsecond=0
             ) + timedelta(days=day_offset)
-            candidates.append(dt_et.astimezone(timezone.utc))
+            candidates.append(dt_utc.replace(tzinfo=timezone.utc))
         except Exception:
             pass
     return candidates
@@ -296,6 +277,7 @@ def match_event_to_ppv(roxie_ev: dict, ppv_streams: list, reference_utc: datetim
     roxie_link = roxie_ev.get("link", "")
     time_str   = roxie_ev.get("roxie_time_str", "")
 
+    # Strategy 1 — name word overlap
     rwords = set(normalize(roxie_name).split())
     best_score, best_stream = 0.0, None
     for s in ppv_streams:
@@ -309,6 +291,7 @@ def match_event_to_ppv(roxie_ev: dict, ppv_streams: list, reference_utc: datetim
         print(f"  [name {best_score:.0%}] '{roxie_name}' -> '{best_stream['name']}'")
         return best_stream
 
+    # Strategy 2 — URL slug word match
     slug_words = slug_to_words(roxie_link)
     if slug_words:
         best_slug_score, best_slug_stream = 0.0, None
@@ -321,6 +304,7 @@ def match_event_to_ppv(roxie_ev: dict, ppv_streams: list, reference_utc: datetim
             print(f"  [slug {best_slug_score:.0%}] '{roxie_name}' -> '{best_slug_stream['name']}'")
             return best_slug_stream
 
+    # Strategy 3 — time window match (FIX: uses reference_utc, not live now())
     candidates = parse_roxie_time(time_str, reference_utc)
     window     = timedelta(minutes=TIME_MATCH_WINDOW)
     for s in ppv_streams:
@@ -333,83 +317,109 @@ def match_event_to_ppv(roxie_ev: dict, ppv_streams: list, reference_utc: datetim
     return None
 
 
-# ── Step 4: extract stream URL ────────────────────────────────────────────────
-# If stream2_url is already known (from onclick), use it directly.
-# Otherwise load the event page and intercept the m3u8 request.
+# ── Step 4: Playwright — extract stream URL ───────────────────────────────────
+# FIX #3: Use network request interception as PRIMARY method.
+#         clapprPlayer JS eval is now the fallback, not the primary.
 
 async def extract_stream(browser, event: dict, index: int, total: int):
-    name        = event["roxie_name"]
-    link        = event["link"]
-    stream2_url = event.get("stream2_url")
+    link   = event["link"]
+    origin = get_origin(link)
+    name   = event["roxie_name"]
 
     print(f"\n[{index}/{total}] Processing: {name}")
-
-    # ── Fast path: Stream 2 URL was hardcoded in onclick ─────────────────────
-    if stream2_url:
-        final = fix_url(stream2_url)
-        print(f"  [stream 2 direct] {final[:90]}")
-        return final
-
-    # ── Slow path: load the page and intercept the m3u8 ──────────────────────
-    print(f"  No direct stream 2 URL — loading page: {link}")
-    origin = get_origin(link)
+    print(f"  URL: {link}")
 
     context = await browser.new_context(
         user_agent=USER_AGENT,
-        extra_http_headers={"Referer": link, "Origin": origin},
+        extra_http_headers={"Referer": NBA_URL, "Origin": origin},
     )
-    page           = await context.new_page()
-    stream_url     = None
+    page       = await context.new_page()
+    stream_url = None
+
+    # --- PRIMARY: intercept network requests for .m3u8 URLs ---
     intercepted_urls: list[str] = []
 
     def on_request(req):
-        if ".m3u8" in req.url:
-            intercepted_urls.append(req.url)
+        url = req.url
+        if ".m3u8" in url:
+            intercepted_urls.append(url)
 
     page.on("request", on_request)
 
     try:
-        resp = await page.goto(link, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT)
+        print(f"  Loading page ...")
+        resp = await page.goto(link, wait_until="networkidle", timeout=PAGE_TIMEOUT)
         if not resp or resp.status != 200:
             print(f"  HTTP {resp.status if resp else 'none'} — skipping")
             return None
 
         print(f"  Page loaded (HTTP {resp.status})")
-        await page.wait_for_timeout(2_000)
+        # Wait for buttons to potentially render via JS
+        await page.wait_for_timeout(4_000)
 
+        # 1. Click stream button
         try:
-            btn = page.locator("button.streambutton").first
-            if await btn.is_visible(timeout=BUTTON_TIMEOUT):
-                print(f"  Clicking stream button ...")
-                await btn.click(force=True, timeout=BUTTON_TIMEOUT)
-                await page.wait_for_timeout(1_500)
+            button_selector = "button.streambutton, button, a.btn, .stream-link, [class*='stream']"
+            buttons = await page.locator(button_selector).all()
+            
+            target_btn = None
+            if buttons:
+                print(f"  Found {len(buttons)} potential stream buttons")
+                # Priority 1: "Stream 2"
+                for b in buttons:
+                    txt = (await b.inner_text()).strip().lower()
+                    if "stream 2" in txt:
+                        target_btn = b
+                        print(f"  Found priority: {txt}")
+                        break
+                
+                # Priority 2: "Stream 1"
+                if not target_btn:
+                    for b in buttons:
+                        txt = (await b.inner_text()).strip().lower()
+                        if "stream 1" in txt:
+                            target_btn = b
+                            print(f"  Falling back to: {txt}")
+                            break
+                
+                # Priority 3: First available button
+                if not target_btn:
+                    target_btn = buttons[0]
+                    print(f"  Using first available button")
+
+                if target_btn:
+                    print(f"  Clicking button ...")
+                    await target_btn.click(force=True, timeout=5000)
+                    await page.wait_for_timeout(2_000)
             else:
+                print(f"  No buttons found — clicking page centre")
                 await page.mouse.click(640, 360)
-                await page.wait_for_timeout(1_500)
+                await page.wait_for_timeout(2_000)
         except Exception as e:
-            print(f"  Click warning: {e}")
+            print(f"  Button click failed/skipped: {e}")
 
+        # 2. Check intercepted first
         await page.wait_for_timeout(3_000)
-
         if intercepted_urls:
             stream_url = intercepted_urls[-1]
             print(f"  [intercept] {stream_url[:90]}")
         else:
-            print(f"  No intercepted .m3u8 — waiting for clapprPlayer ({CLAPPR_TIMEOUT//1000}s) ...")
+            # Fallback: wait for clapprPlayer
+            print(f"  No intercepted .m3u8 — waiting for clapprPlayer ...")
             try:
                 await page.wait_for_function(
                     "() => typeof clapprPlayer !== 'undefined' && clapprPlayer.options && clapprPlayer.options.source",
-                    timeout=CLAPPR_TIMEOUT,
+                    timeout=10000,
                 )
                 stream_url = await page.evaluate("() => clapprPlayer.options.source")
                 print(f"  [clapprPlayer] {stream_url}")
-            except PWTimeoutError:
-                print(f"  clapprPlayer timed out — trying JS fallbacks ...")
+            except Exception:
+                pass
 
+        # 3. JS fallbacks
         if not stream_url:
             for expr in [
                 "window.player?.options?.source",
-                "window.jwplayer?.()?.getPlaylistItem?.()?.file",
                 "document.querySelector('video source')?.src",
                 "document.querySelector('video')?.src",
             ]:
@@ -422,12 +432,8 @@ async def extract_stream(browser, event: dict, index: int, total: int):
                 except Exception:
                     pass
 
-        if not stream_url and intercepted_urls:
-            stream_url = intercepted_urls[-1]
-            print(f"  [late intercept] {stream_url[:90]}")
-
     except Exception as e:
-        print(f"  Error: {e}")
+        print(f"  Main extraction error: {e}")
     finally:
         page.remove_listener("request", on_request)
         try:
@@ -448,8 +454,8 @@ async def extract_stream(browser, event: dict, index: int, total: int):
 # ── Step 5: write playlist ────────────────────────────────────────────────────
 
 def write_playlist(entries: list):
-    lines = ["#EXTM3U"]
-    ok    = 0
+    lines   = ["#EXTM3U"]
+    ok      = 0
 
     for e in entries:
         url = e.get("stream_url") or "http://no-stream-yet.com/dummy.m3u8"
@@ -475,11 +481,12 @@ def write_playlist(entries: list):
 # ── main ──────────────────────────────────────────────────────────────────────
 
 async def main():
+    # Snapshot "now" ONCE — used as the stable reference throughout
     now_utc = datetime.now(tz=timezone.utc)
     now_pht = now_utc.astimezone(PHT)
     print(f"UTC: {now_utc.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"PHT: {now_pht.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)")
-
+    
     is_full_fetch = (now_pht.hour == 0) or ("--full" in sys.argv)
     print(f"MODE: {'FULL FETCH (12:00 AM PHT)' if is_full_fetch else 'UPDATE (Roxie streams only)'}")
     print("=" * 60)
@@ -504,6 +511,8 @@ async def main():
                 write_playlist([])
                 await browser.close()
                 return
+            
+            # Initialize schedule state with fresh PPV data
             schedule_state = ppv_streams
         else:
             print("1. [UPDATE] Loading schedule.json ...")
@@ -514,7 +523,7 @@ async def main():
                 await browser.close()
                 return
 
-        # 2. Scrape roxie
+        # 2. Scrape roxie (JS-rendered, uses Playwright)
         print("-" * 60)
         roxie_events = await get_roxie_events_async(browser)
 
@@ -524,13 +533,14 @@ async def main():
         for ev in roxie_events:
             ppv = match_event_to_ppv(ev, schedule_state, reference_utc=now_utc)
             if ppv:
+                # Store the latest Roxie metadata/link on the matched schedule item
                 ppv["roxie_name"] = ev["roxie_name"]
-                ppv["link"]       = ev["link"]
-                ppv["stream2_url"] = ev.get("stream2_url")
+                ppv["link"] = ev["link"]
 
+        # Sort schedule by start time
         schedule_state.sort(key=lambda x: x.get("starts_at") or now_utc)
 
-        # 4. Extract streams
+        # 4. Extract streams sequentially for matched items
         print("=" * 60)
         to_extract = [s for s in schedule_state if s.get("link")]
         print(f"Extracting streams for {len(to_extract)} scheduled events (out of {len(schedule_state)} total) ...")
@@ -539,20 +549,21 @@ async def main():
             url = await extract_stream(browser, s, i, len(to_extract))
             if url:
                 s["stream_url"] = url
+            # If `url` is None (fails extraction or timeout), we intentionally DO NOT overwrite `s.get("stream_url")`
+            # This maintains whatever stream_url was previously saved as the fallback.
 
-        # Prepare display names
+        # Prepare formatting for the final playlist output
         for s in schedule_state:
-            time_str  = fmt_time_pht(s.get("starts_at")).strip()
-            base_name = s.get("name", s.get("roxie_name", "Unknown"))
-            if time_str and time_str in base_name:
-                s["display_name"] = base_name
+            time_str = fmt_time_pht(s.get('starts_at')).strip()
+            if time_str and time_str in s['name']:
+                s["display_name"] = s['name']
             else:
-                s["display_name"] = f"{base_name} {time_str}".strip()
+                s["display_name"] = f"{s['name']} {time_str}".strip()
             s["logo"] = s.get("poster", "")
 
         await browser.close()
 
-    # 5. Write playlist & schedule state
+    # 5. Write playlist & final schedule state (with new extracted URLs or preserved fallbacks!)
     print("\n" + "=" * 60)
     save_schedule(schedule_state)
     write_playlist(schedule_state)
