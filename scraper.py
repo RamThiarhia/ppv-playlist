@@ -46,6 +46,20 @@ USER_AGENT = (
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
+NBA_TEAMS = {
+    "atlanta", "hawks", "boston", "celtics", "brooklyn", "nets",
+    "charlotte", "hornets", "chicago", "bulls", "cleveland", "cavaliers",
+    "dallas", "mavericks", "denver", "nuggets", "detroit", "pistons",
+    "golden state", "warriors", "houston", "rockets", "indiana", "pacers",
+    "la clippers", "clippers", "los angeles", "lakers", "memphis", "grizzlies",
+    "miami", "heat", "milwaukee", "bucks", "minnesota", "timberwolves",
+    "new orleans", "pelicans", "new york", "knicks", "oklahoma", "thunder",
+    "orlando", "magic", "philadelphia", "sixers", "phoenix", "suns",
+    "portland", "blazers", "sacramento", "kings", "san antonio", "spurs",
+    "toronto", "raptors", "utah", "jazz", "washington", "wizards",
+    "oklahoma city",
+}
+
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -177,6 +191,12 @@ async def get_roxie_events_async(browser) -> list:
                 else:
                     print(f"    Stream 2 onclick has no direct URL: {onclick2[:80]}")
 
+            # Skip non-NBA games
+            name_lower = event_name.lower()
+            if not any(team in name_lower for team in NBA_TEAMS):
+                print(f"  Skipping non-NBA: '{event_name}'")
+                continue
+
             events.append({
                 "roxie_name"    : event_name,
                 "link"          : event_link,   # event page — used as referrer
@@ -224,6 +244,9 @@ def get_ppv_nba() -> list:
                         "poster"   : s.get("poster", ""),
                         "starts_at": datetime.fromtimestamp(ts, tz=timezone.utc),
                     }
+                    if not any(team in entry["name"].lower() for team in NBA_TEAMS):
+                        print(f"  Skipping non-NBA PPV: '{entry['name']}'")
+                        continue
                     nba_streams.append(entry)
                     print(f"  PPV: '{entry['name']}' @ {fmt_time_pht(entry['starts_at'])}")
 
