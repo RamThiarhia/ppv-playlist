@@ -4,14 +4,20 @@
     "poster": "https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg",
     "display_name": "Detroit Pistons vs. Orlando Magic 05/02 07:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg",
-    "starts_at_iso": "2026-05-01T23:00:00+00:00"
+    "starts_at_iso": "2026-05-01T23:00:00+00:00",
+    "roxie_name": "Orlando Magic vs Detroit Pistons",
+    "link": "https://istreameast.app/nba/orlando-magic-detroit-pistons/40892704",
+    "stream_url": "https://chatgpt.hereisman.net/playlist/49897/load-playlist"
   },
   {
     "name": "Cleveland Cavaliers vs. Toronto Raptors",
     "poster": "https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg",
     "display_name": "Cleveland Cavaliers vs. Toronto Raptors 05/02 07:30 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg",
-    "starts_at_iso": "2026-05-01T23:30:00+00:00"
+    "starts_at_iso": "2026-05-01T23:30:00+00:00",
+    "roxie_name": "Toronto Raptors vs Cleveland Cavaliers",
+    "link": "https://istreameast.app/nba/toronto-raptors-cleveland-cavaliers/40892768",
+    "stream_url": "https://chatgpt.hereisman.net/playlist/49914/load-playlist"
   },
   {
     "name": "Los Angeles Lakers vs. Houston Rockets",

@@ -1,14 +1,14 @@
 #EXTM3U
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg" group-title="NBA",Detroit Pistons vs. Orlando Magic 05/02 07:00 AM PHT
-#EXTVLCOPT:http-referrer=
-#EXTVLCOPT:http-origin=
+#EXTVLCOPT:http-referrer=https://istreameast.app/nba/orlando-magic-detroit-pistons/40892704
+#EXTVLCOPT:http-origin=https://istreameast.app
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-http://no-stream-yet.com/dummy.m3u8
+https://chatgpt.hereisman.net/playlist/49897/load-playlist
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg" group-title="NBA",Cleveland Cavaliers vs. Toronto Raptors 05/02 07:30 AM PHT
-#EXTVLCOPT:http-referrer=
-#EXTVLCOPT:http-origin=
+#EXTVLCOPT:http-referrer=https://istreameast.app/nba/toronto-raptors-cleveland-cavaliers/40892768
+#EXTVLCOPT:http-origin=https://istreameast.app
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-http://no-stream-yet.com/dummy.m3u8
+https://chatgpt.hereisman.net/playlist/49914/load-playlist
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/7f58fd4bde56202e7e3ad5798ef9dc3d-thumbnail.jpg" group-title="NBA",Los Angeles Lakers vs. Houston Rockets 05/02 09:30 AM PHT
 #EXTVLCOPT:http-referrer=
 #EXTVLCOPT:http-origin=
