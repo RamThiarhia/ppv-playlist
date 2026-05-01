@@ -1,32 +1,23 @@
 [
   {
-    "name": "New York Knicks vs. Atlanta Hawks",
-    "poster": "https://api.ppv.to/assets/thumb/761919e7eaff8e124928ce28884c2d00-thumbnail.jpg",
-    "roxie_name": "New York Knicks vs Atlanta Hawks",
-    "link": "https://roxiestreams.su/nba-streams-1",
-    "display_name": "New York Knicks vs. Atlanta Hawks 05/01 07:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/761919e7eaff8e124928ce28884c2d00-thumbnail.jpg",
-    "starts_at_iso": "2026-04-30T23:00:00+00:00",
-    "stream_url": "https://601.shoncine.com/main.m3u8"
+    "name": "Detroit Pistons vs. Orlando Magic",
+    "poster": "https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg",
+    "display_name": "Detroit Pistons vs. Orlando Magic 05/02 07:00 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg",
+    "starts_at_iso": "2026-05-01T23:00:00+00:00"
   },
   {
-    "name": "Boston Celtics vs. Philadelphia 76ers",
-    "poster": "https://api.ppv.to/assets/thumb/93f881d27158b0984996941335d8139e-thumbnail.jpg",
-    "roxie_name": "Boston Celtics vs Philadelphia 76ers",
-    "link": "https://roxiestreams.su/nba-streams-2",
-    "display_name": "Boston Celtics vs. Philadelphia 76ers 05/01 08:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/93f881d27158b0984996941335d8139e-thumbnail.jpg",
-    "starts_at_iso": "2026-05-01T00:00:00+00:00",
-    "stream_url": "https://daffodil.nimesh.eu.cc/nba2.m3u8"
+    "name": "Cleveland Cavaliers vs. Toronto Raptors",
+    "poster": "https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg",
+    "display_name": "Cleveland Cavaliers vs. Toronto Raptors 05/02 07:30 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg",
+    "starts_at_iso": "2026-05-01T23:30:00+00:00"
   },
   {
-    "name": "Denver Nuggets vs. Minnesota Timberwolves",
-    "poster": "https://api.ppv.to/assets/thumb/07a205f85a0e4d037a62bd5d6bf5fb78-thumbnail.jpg",
-    "roxie_name": "Denver Nuggets vs Minnesota Timberwolves",
-    "link": "https://roxiestreams.su/nba-streams-3",
-    "display_name": "Denver Nuggets vs. Minnesota Timberwolves 05/01 09:30 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/07a205f85a0e4d037a62bd5d6bf5fb78-thumbnail.jpg",
-    "starts_at_iso": "2026-05-01T01:30:00+00:00",
-    "stream_url": "https://601.nimesh.eu.cc/nba2.m3u8"
+    "name": "Los Angeles Lakers vs. Houston Rockets",
+    "poster": "https://api.ppv.to/assets/thumb/7f58fd4bde56202e7e3ad5798ef9dc3d-thumbnail.jpg",
+    "display_name": "Los Angeles Lakers vs. Houston Rockets 05/02 09:30 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/7f58fd4bde56202e7e3ad5798ef9dc3d-thumbnail.jpg",
+    "starts_at_iso": "2026-05-02T01:30:00+00:00"
   }
 ]
