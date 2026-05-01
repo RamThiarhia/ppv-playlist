@@ -19,8 +19,9 @@ from playwright.async_api import async_playwright, TimeoutError as PWTimeoutErro
 
 # ── config ────────────────────────────────────────────────────────────────────
 
-BASE_URL = "https://roxiestreams.su"
-NBA_URL  = urljoin(BASE_URL, "nba")
+BASE_URL = "https://istreameast.app"
+NBA_URL  = BASE_URL
+
 
 PPV_MIRRORS = [
     "https://api.ppv.to/api/streams",
@@ -102,82 +103,83 @@ def save_schedule(schedule: list):
 # ── Step 1: scrape roxiestreams NBA via Playwright ───────────────────────────
 # FIX #1: Use Playwright instead of requests so JS-rendered tables are visible.
 
-async def get_roxie_events_async(browser) -> list:
-    print(f"Scraping {NBA_URL} with Playwright (JS-rendered) ...")
+async def get_istreameast_events(browser) -> list:
+    print(f"Scraping {BASE_URL} with Playwright ...")
     events  = []
     context = await browser.new_context(user_agent=USER_AGENT)
     page    = await context.new_page()
 
     try:
-        await page.goto(NBA_URL, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+        await page.goto(BASE_URL, wait_until="networkidle", timeout=PAGE_TIMEOUT)
         # Give any late JS a moment
         await page.wait_for_timeout(2_000)
 
         # Dump raw HTML for diagnosis
         html = await page.content()
-        with open("roxie_debug.html", "w", encoding="utf-8") as f:
+        with open("istreameast_debug.html", "w", encoding="utf-8") as f:
             f.write(html)
-        print("  Saved roxie_debug.html for inspection")
+        print("  Saved istreameast_debug.html for inspection")
 
-        # Try both known selectors
-        rows = await page.query_selector_all("table#eventsTable tbody tr")
-        if not rows:
-            rows = await page.query_selector_all("table tbody tr")
-        if not rows:
-            # Broad fallback: any row containing a link
-            rows = await page.query_selector_all("tr:has(a)")
+        # New selectors based on example
+        items = await page.query_selector_all("li.f1-podium--item")
+        print(f"  Items found: {len(items)}")
 
-        print(f"  Rows found: {len(rows)}")
-
-        for row in rows:
-            all_links = await row.query_selector_all("a")
-            if not all_links:
+        for item in items:
+            # Check for live status
+            time_elem = await item.query_selector(".SaatZamanBilgisi")
+            if time_elem:
+                time_text = (await time_elem.inner_text()).strip().lower()
+                if "live" not in time_text:
+                    continue
+            else:
                 continue
 
-            # Prioritize the second link if available, or one containing "Stream 2"
-            target_link = all_links[0]
-            if len(all_links) > 1:
-                found_s2 = False
-                for link_candidate in all_links:
-                    text = (await link_candidate.inner_text()).lower()
-                    if "stream 2" in text:
-                        target_link = link_candidate
-                        found_s2 = True
-                        break
-                if not found_s2:
-                    # Fallback: pick the second link if multiple exist
-                    target_link = all_links[1]
+            # Sport check
+            rank_elem = await item.query_selector(".f1-podium--rank")
+            if not rank_elem:
+                continue
+            sport = (await rank_elem.inner_text()).strip().upper()
+            
+            # STRICT NBA FILTER (Excludes WNBA, MLB, etc.)
+            if sport != "NBA":
+                continue
 
-            event_name = (await target_link.inner_text()).strip()
-            href       = await target_link.get_attribute("href")
+            # Event name
+            driver_elem = await item.query_selector(".f1-podium--driver")
+            if not driver_elem:
+                continue
+            
+            event_name = (await driver_elem.inner_text()).strip()
+            # Try to get the more descriptive name if span exists
+            inner_span = await driver_elem.query_selector("span.d-md-inline")
+            if inner_span:
+                event_name = (await inner_span.inner_text()).strip()
+
+            # Link
+            link_elem = await item.query_selector("a.f1-podium--link")
+            if not link_elem:
+                continue
+            href = await link_elem.get_attribute("href")
             if not href:
                 continue
-
-            # Extract time from any cell
-            cells    = await row.query_selector_all("td")
-            time_str = ""
-            for cell in cells:
-                txt = (await cell.inner_text()).strip()
-                if re.search(r"\d{1,2}:\d{2}", txt):
-                    time_str = txt
-                    break
-
+            
             full_link = urljoin(BASE_URL, href)
             events.append({
-                "roxie_name"    : event_name,
+                "roxie_name"    : event_name, 
                 "link"          : full_link,
-                "roxie_time_str": time_str,
+                "roxie_time_str": "LIVE",
             })
-            print(f"  Found: '{event_name}' @ '{time_str}'  -> {full_link}")
+            print(f"  Found NBA: '{event_name}' -> {full_link}")
 
     except Exception as e:
-        print(f"  FAIL scraping roxie: {e}")
+        print(f"  FAIL scraping istreameast: {e}")
     finally:
         await page.close()
         await context.close()
 
     print(f"  Total: {len(events)} NBA events")
     return events
+
 
 
 # ── Step 2: get PPV.to NBA streams ───────────────────────────────────────────
@@ -357,46 +359,67 @@ async def extract_stream(browser, event: dict, index: int, total: int):
         # Wait for buttons to potentially render via JS
         await page.wait_for_timeout(4_000)
 
-        # 1. Click stream button
-        try:
-            button_selector = "button.streambutton, button, a.btn, .stream-link, [class*='stream']"
-            buttons = await page.locator(button_selector).all()
-            
-            target_btn = None
-            if buttons:
-                print(f"  Found {len(buttons)} potential stream buttons")
-                # Priority 1: "Stream 2"
-                for b in buttons:
-                    txt = (await b.inner_text()).strip().lower()
-                    if "stream 2" in txt:
-                        target_btn = b
-                        print(f"  Found priority: {txt}")
-                        break
+        # 1. Look for iframe#wp_player and its src
+        iframe_elem = await page.query_selector("iframe#wp_player")
+        if iframe_elem:
+            iframe_src = await iframe_elem.get_attribute("src")
+            if iframe_src:
+                print(f"  Found iframe#wp_player: {iframe_src}")
+                # Optional: try to fetch iframe src content directly if needed
+                try:
+                    # Use a new page to load the iframe src to extract the source regex
+                    iframe_page = await context.new_page()
+                    await iframe_page.goto(iframe_src, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+                    iframe_content = await iframe_page.content()
+                    pattern = re.compile(r'const\s+source\s+=\s+"([^"]*)"', re.I)
+                    if match := pattern.search(iframe_content):
+                        stream_url = match.group(1)
+                        print(f"  [regex match] {stream_url[:90]}")
+                    await iframe_page.close()
+                except Exception as e:
+                    print(f"  Iframe regex extraction failed: {e}")
+
+        if not stream_url:
+            # 2. Click stream button (if regex failed)
+            try:
+                button_selector = "button.streambutton, button, a.btn, .stream-link, [class*='stream']"
+                buttons = await page.locator(button_selector).all()
                 
-                # Priority 2: "Stream 1"
-                if not target_btn:
+                target_btn = None
+                if buttons:
+                    print(f"  Found {len(buttons)} potential stream buttons")
+                    # Priority 1: "Stream 2"
                     for b in buttons:
                         txt = (await b.inner_text()).strip().lower()
-                        if "stream 1" in txt:
+                        if "stream 2" in txt:
                             target_btn = b
-                            print(f"  Falling back to: {txt}")
+                            print(f"  Found priority: {txt}")
                             break
-                
-                # Priority 3: First available button
-                if not target_btn:
-                    target_btn = buttons[0]
-                    print(f"  Using first available button")
+                    
+                    # Priority 2: "Stream 1"
+                    if not target_btn:
+                        for b in buttons:
+                            txt = (await b.inner_text()).strip().lower()
+                            if "stream 1" in txt:
+                                target_btn = b
+                                print(f"  Falling back to: {txt}")
+                                break
+                    
+                    # Priority 3: First available button
+                    if not target_btn:
+                        target_btn = buttons[0]
+                        print(f"  Using first available button")
 
-                if target_btn:
-                    print(f"  Clicking button ...")
-                    await target_btn.click(force=True, timeout=5000)
+                    if target_btn:
+                        print(f"  Clicking button ...")
+                        await target_btn.click(force=True, timeout=5000)
+                        await page.wait_for_timeout(2_000)
+                else:
+                    print(f"  No buttons found — clicking page centre")
+                    await page.mouse.click(640, 360)
                     await page.wait_for_timeout(2_000)
-            else:
-                print(f"  No buttons found — clicking page centre")
-                await page.mouse.click(640, 360)
-                await page.wait_for_timeout(2_000)
-        except Exception as e:
-            print(f"  Button click failed/skipped: {e}")
+            except Exception as e:
+                print(f"  Button click failed/skipped: {e}")
 
         # 2. Check intercepted first
         await page.wait_for_timeout(3_000)
@@ -523,9 +546,10 @@ async def main():
                 await browser.close()
                 return
 
-        # 2. Scrape roxie (JS-rendered, uses Playwright)
+        # 2. Scrape istreameast
         print("-" * 60)
-        roxie_events = await get_roxie_events_async(browser)
+        roxie_events = await get_istreameast_events(browser)
+
 
         # 3. Match roxie events -> schedule_state items
         print("-" * 60)
