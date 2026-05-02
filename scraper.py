@@ -19,10 +19,8 @@ from playwright.async_api import async_playwright, TimeoutError as PWTimeoutErro
 
 # ── config ────────────────────────────────────────────────────────────────────
 
-BASE_URL = "https://sharkstreams.net"
-NBA_URL  = BASE_URL
-
-
+BASE_URL = "https://roxiestreams.su"
+NBA_URL  = urljoin(BASE_URL, "nba")
 
 PPV_MIRRORS = [
     "https://api.ppv.to/api/streams",
@@ -104,85 +102,82 @@ def save_schedule(schedule: list):
 # ── Step 1: scrape roxiestreams NBA via Playwright ───────────────────────────
 # FIX #1: Use Playwright instead of requests so JS-rendered tables are visible.
 
-async def get_shark_events(browser) -> list:
-    print(f"Scraping {BASE_URL} with Playwright ...")
+async def get_roxie_events_async(browser) -> list:
+    print(f"Scraping {NBA_URL} with Playwright (JS-rendered) ...")
     events  = []
     context = await browser.new_context(user_agent=USER_AGENT)
     page    = await context.new_page()
 
     try:
-        await page.goto(BASE_URL, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+        await page.goto(NBA_URL, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+        # Give any late JS a moment
         await page.wait_for_timeout(2_000)
 
         # Dump raw HTML for diagnosis
         html = await page.content()
-        with open("shark_debug.html", "w", encoding="utf-8") as f:
+        with open("roxie_debug.html", "w", encoding="utf-8") as f:
             f.write(html)
-        print("  Saved shark_debug.html for inspection")
+        print("  Saved roxie_debug.html for inspection")
 
-        # Selectors based on example
-        rows = await page.query_selector_all(".row")
+        # Try both known selectors
+        rows = await page.query_selector_all("table#eventsTable tbody tr")
+        if not rows:
+            rows = await page.query_selector_all("table tbody tr")
+        if not rows:
+            # Broad fallback: any row containing a link
+            rows = await page.query_selector_all("tr:has(a)")
+
         print(f"  Rows found: {len(rows)}")
 
-        pattern = re.compile(r"openEmbed\('([^']+)'\)", re.I)
-        now_et = datetime.now(tz=ET)
-
         for row in rows:
-            sport_node = await row.query_selector(".ch-category")
-            name_node = await row.query_selector(".ch-name")
-            date_node = await row.query_selector(".ch-date")
-
-            if not (sport_node and name_node and date_node):
+            all_links = await row.query_selector_all("a")
+            if not all_links:
                 continue
 
-            sport = (await sport_node.inner_text()).strip().upper()
-            
-            # STRICT NBA FILTER
-            if sport != "NBA":
+            # Prioritize the second link if available, or one containing "Stream 2"
+            target_link = all_links[0]
+            if len(all_links) > 1:
+                found_s2 = False
+                for link_candidate in all_links:
+                    text = (await link_candidate.inner_text()).lower()
+                    if "stream 2" in text:
+                        target_link = link_candidate
+                        found_s2 = True
+                        break
+                if not found_s2:
+                    # Fallback: pick the second link if multiple exist
+                    target_link = all_links[1]
+
+            event_name = (await target_link.inner_text()).strip()
+            href       = await target_link.get_attribute("href")
+            if not href:
                 continue
 
-            event_name = (await name_node.inner_text()).strip()
-            date_str = (await date_node.inner_text()).strip()
+            # Extract time from any cell
+            cells    = await row.query_selector_all("td")
+            time_str = ""
+            for cell in cells:
+                txt = (await cell.inner_text()).strip()
+                if re.search(r"\d{1,2}:\d{2}", txt):
+                    time_str = txt
+                    break
 
-            # Check if game is today in ET
-            # Simplified date check for now: if it contains "Today" or matches current date
-            # But the example code was more specific. I'll just skip the date filter if it's too complex
-            # or try a basic one. Most scrapers show current games anyway.
-
-            embed_btn = await row.query_selector("a.hd-link.secondary")
-            if not embed_btn:
-                continue
-            
-            onclick = await embed_btn.get_attribute("onclick")
-            if not onclick:
-                continue
-
-            match = pattern.search(onclick)
-            if not match:
-                continue
-
-            # Transform link for JSON API
-            link = match.group(1).replace("player.php", "get-stream.php")
-            if not link.startswith("http"):
-                link = urljoin(BASE_URL, link)
-
+            full_link = urljoin(BASE_URL, href)
             events.append({
-                "roxie_name"    : event_name, 
-                "link"          : link,
-                "roxie_time_str": date_str,
+                "roxie_name"    : event_name,
+                "link"          : full_link,
+                "roxie_time_str": time_str,
             })
-            print(f"  Found NBA: '{event_name}' -> {link}")
+            print(f"  Found: '{event_name}' @ '{time_str}'  -> {full_link}")
 
     except Exception as e:
-        print(f"  FAIL scraping shark: {e}")
+        print(f"  FAIL scraping roxie: {e}")
     finally:
         await page.close()
         await context.close()
 
     print(f"  Total: {len(events)} NBA events")
     return events
-
-
 
 
 # ── Step 2: get PPV.to NBA streams ───────────────────────────────────────────
@@ -352,58 +347,90 @@ async def extract_stream(browser, event: dict, index: int, total: int):
     page.on("request", on_request)
 
     try:
-        print(f"  Loading SHARK JSON ...")
-        # Use requests for the JSON API call instead of Playwright to simplify
-        r = requests.get(link, headers={"User-Agent": USER_AGENT, "Referer": BASE_URL}, timeout=15)
-        if r.status_code == 200:
-            data = r.json()
-            if m3u8_urls := data.get("urls"):
-                # Transform to chunks.m3u8 as per example
-                raw_url = m3u8_urls[0]
-                stream_url = re.sub(r"playlist\.m3u8\?.*$", "chunks.m3u8", raw_url, flags=re.I)
-                print(f"  [SHARK JSON] {stream_url[:90]}")
-        
-        if not stream_url:
-            # Fallback to Playwright if JSON fails
-            print(f"  JSON failed, falling back to Playwright ...")
-            resp = await page.goto(link, wait_until="networkidle", timeout=PAGE_TIMEOUT)
-            if resp and resp.status == 200:
-                print(f"  Page loaded (HTTP {resp.status})")
-                await page.wait_for_timeout(4_000)
-                
-                # Check intercepted first
-                await page.wait_for_timeout(3_000)
-                if intercepted_urls:
-                    stream_url = intercepted_urls[-1]
-                    print(f"  [intercept] {stream_url[:90]}")
-                else:
-                    # Fallback: wait for clapprPlayer
-                    print(f"  No intercepted .m3u8 — waiting for clapprPlayer ...")
-                    try:
-                        await page.wait_for_function(
-                            "() => typeof clapprPlayer !== 'undefined' && clapprPlayer.options && clapprPlayer.options.source",
-                            timeout=10000,
-                        )
-                        stream_url = await page.evaluate("() => clapprPlayer.options.source")
-                        print(f"  [clapprPlayer] {stream_url}")
-                    except Exception:
-                        pass
+        print(f"  Loading page ...")
+        resp = await page.goto(link, wait_until="networkidle", timeout=PAGE_TIMEOUT)
+        if not resp or resp.status != 200:
+            print(f"  HTTP {resp.status if resp else 'none'} — skipping")
+            return None
 
-                # JS fallbacks
-                if not stream_url:
-                    for expr in [
-                        "window.player?.options?.source",
-                        "document.querySelector('video source')?.src",
-                        "document.querySelector('video')?.src",
-                    ]:
-                        try:
-                            val = await page.evaluate(expr)
-                            if val and isinstance(val, str) and ".m3u8" in val:
-                                stream_url = val
-                                print(f"  [JS fallback] {val[:90]}")
-                                break
-                        except Exception:
-                            pass
+        print(f"  Page loaded (HTTP {resp.status})")
+        # Wait for buttons to potentially render via JS
+        await page.wait_for_timeout(4_000)
+
+        # 1. Click stream button
+        try:
+            button_selector = "button.streambutton, button, a.btn, .stream-link, [class*='stream']"
+            buttons = await page.locator(button_selector).all()
+            
+            target_btn = None
+            if buttons:
+                print(f"  Found {len(buttons)} potential stream buttons")
+                # Priority 1: "Stream 2"
+                for b in buttons:
+                    txt = (await b.inner_text()).strip().lower()
+                    if "stream 2" in txt:
+                        target_btn = b
+                        print(f"  Found priority: {txt}")
+                        break
+                
+                # Priority 2: "Stream 1"
+                if not target_btn:
+                    for b in buttons:
+                        txt = (await b.inner_text()).strip().lower()
+                        if "stream 1" in txt:
+                            target_btn = b
+                            print(f"  Falling back to: {txt}")
+                            break
+                
+                # Priority 3: First available button
+                if not target_btn:
+                    target_btn = buttons[0]
+                    print(f"  Using first available button")
+
+                if target_btn:
+                    print(f"  Clicking button ...")
+                    await target_btn.click(force=True, timeout=5000)
+                    await page.wait_for_timeout(2_000)
+            else:
+                print(f"  No buttons found — clicking page centre")
+                await page.mouse.click(640, 360)
+                await page.wait_for_timeout(2_000)
+        except Exception as e:
+            print(f"  Button click failed/skipped: {e}")
+
+        # 2. Check intercepted first
+        await page.wait_for_timeout(3_000)
+        if intercepted_urls:
+            stream_url = intercepted_urls[-1]
+            print(f"  [intercept] {stream_url[:90]}")
+        else:
+            # Fallback: wait for clapprPlayer
+            print(f"  No intercepted .m3u8 — waiting for clapprPlayer ...")
+            try:
+                await page.wait_for_function(
+                    "() => typeof clapprPlayer !== 'undefined' && clapprPlayer.options && clapprPlayer.options.source",
+                    timeout=10000,
+                )
+                stream_url = await page.evaluate("() => clapprPlayer.options.source")
+                print(f"  [clapprPlayer] {stream_url}")
+            except Exception:
+                pass
+
+        # 3. JS fallbacks
+        if not stream_url:
+            for expr in [
+                "window.player?.options?.source",
+                "document.querySelector('video source')?.src",
+                "document.querySelector('video')?.src",
+            ]:
+                try:
+                    val = await page.evaluate(expr)
+                    if val and isinstance(val, str) and ".m3u8" in val:
+                        stream_url = val
+                        print(f"  [JS fallback] {val[:90]}")
+                        break
+                except Exception:
+                    pass
 
     except Exception as e:
         print(f"  Main extraction error: {e}")
@@ -496,11 +523,9 @@ async def main():
                 await browser.close()
                 return
 
-        # 2. Scrape SHARK
+        # 2. Scrape roxie (JS-rendered, uses Playwright)
         print("-" * 60)
-        roxie_events = await get_shark_events(browser)
-
-
+        roxie_events = await get_roxie_events_async(browser)
 
         # 3. Match roxie events -> schedule_state items
         print("-" * 60)
