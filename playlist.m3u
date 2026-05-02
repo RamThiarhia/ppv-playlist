@@ -1,16 +1,16 @@
 #EXTM3U
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg" group-title="NBA",Detroit Pistons vs. Orlando Magic 05/02 07:00 AM PHT
-#EXTVLCOPT:http-referrer=https://istreameast.app/nba/orlando-magic-detroit-pistons/40892704
-#EXTVLCOPT:http-origin=https://istreameast.app
+#EXTVLCOPT:http-referrer=https://sharkstreams.net/get-stream.php?channel=2243
+#EXTVLCOPT:http-origin=https://sharkstreams.net
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://chatgpt.hereisman.net/playlist/49897/load-playlist
+https://sh1.shfiles.cfd/live/magic/stream.m3u8?expires=1777679695&token=4555bd9065480c28a9fe9875c93ff1f4ae06a4b88194afc8ae5a7c943d1c585d
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg" group-title="NBA",Cleveland Cavaliers vs. Toronto Raptors 05/02 07:30 AM PHT
-#EXTVLCOPT:http-referrer=https://istreameast.app/nba/toronto-raptors-cleveland-cavaliers/40892768
-#EXTVLCOPT:http-origin=https://istreameast.app
+#EXTVLCOPT:http-referrer=https://sharkstreams.net/get-stream.php?channel=2244
+#EXTVLCOPT:http-origin=https://sharkstreams.net
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://chatgpt.hereisman.net/playlist/49914/load-playlist
+https://sh2.shfiles.cfd/live/raptors/stream.m3u8?expires=1777679705&token=51fe7701d6cac30c321094d66896b1c37eb0f7a27c2ca90b9d8e56787c9b8a7e
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/7f58fd4bde56202e7e3ad5798ef9dc3d-thumbnail.jpg" group-title="NBA",Los Angeles Lakers vs. Houston Rockets 05/02 09:30 AM PHT
-#EXTVLCOPT:http-referrer=https://istreameast.app/nba/los-angeles-lakers-houston-rockets/40892672
-#EXTVLCOPT:http-origin=https://istreameast.app
+#EXTVLCOPT:http-referrer=https://sharkstreams.net/get-stream.php?channel=2245
+#EXTVLCOPT:http-origin=https://sharkstreams.net
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://chatgpt.hereisman.net/playlist/49928/load-playlist
+https://sh3.shfiles.cfd/live/lakers/stream.m3u8?expires=1777679809&token=fa1294d9120ed2283f13cee16084bce73c88f7d83217afd6e6055fb05e108bbf

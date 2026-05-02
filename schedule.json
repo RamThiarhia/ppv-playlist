@@ -5,9 +5,9 @@
     "display_name": "Detroit Pistons vs. Orlando Magic 05/02 07:00 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/7d6d17d170148d3ec3ca7d13340f3089-thumbnail.jpg",
     "starts_at_iso": "2026-05-01T23:00:00+00:00",
-    "roxie_name": "Orlando Magic vs Detroit Pistons",
-    "link": "https://istreameast.app/nba/orlando-magic-detroit-pistons/40892704",
-    "stream_url": "https://chatgpt.hereisman.net/playlist/49897/load-playlist"
+    "roxie_name": "Detroit Pistons vs Orlando Magic",
+    "link": "https://sharkstreams.net/get-stream.php?channel=2243",
+    "stream_url": "https://sh1.shfiles.cfd/live/magic/stream.m3u8?expires=1777679695&token=4555bd9065480c28a9fe9875c93ff1f4ae06a4b88194afc8ae5a7c943d1c585d"
   },
   {
     "name": "Cleveland Cavaliers vs. Toronto Raptors",
@@ -15,9 +15,9 @@
     "display_name": "Cleveland Cavaliers vs. Toronto Raptors 05/02 07:30 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/4896822d763d2d6fb63eb3b2c1cc5958-thumbnail.jpg",
     "starts_at_iso": "2026-05-01T23:30:00+00:00",
-    "roxie_name": "Toronto Raptors vs Cleveland Cavaliers",
-    "link": "https://istreameast.app/nba/toronto-raptors-cleveland-cavaliers/40892768",
-    "stream_url": "https://chatgpt.hereisman.net/playlist/49914/load-playlist"
+    "roxie_name": "Cleveland Cavaliers vs Toronto Raptors",
+    "link": "https://sharkstreams.net/get-stream.php?channel=2244",
+    "stream_url": "https://sh2.shfiles.cfd/live/raptors/stream.m3u8?expires=1777679705&token=51fe7701d6cac30c321094d66896b1c37eb0f7a27c2ca90b9d8e56787c9b8a7e"
   },
   {
     "name": "Los Angeles Lakers vs. Houston Rockets",
@@ -25,8 +25,8 @@
     "display_name": "Los Angeles Lakers vs. Houston Rockets 05/02 09:30 AM PHT",
     "logo": "https://api.ppv.to/assets/thumb/7f58fd4bde56202e7e3ad5798ef9dc3d-thumbnail.jpg",
     "starts_at_iso": "2026-05-02T01:30:00+00:00",
-    "roxie_name": "Houston Rockets vs Los Angeles Lakers",
-    "link": "https://istreameast.app/nba/los-angeles-lakers-houston-rockets/40892672",
-    "stream_url": "https://chatgpt.hereisman.net/playlist/49928/load-playlist"
+    "roxie_name": "Los Angeles Lakers vs Houston Rockets",
+    "link": "https://sharkstreams.net/get-stream.php?channel=2245",
+    "stream_url": "https://sh3.shfiles.cfd/live/lakers/stream.m3u8?expires=1777679809&token=fa1294d9120ed2283f13cee16084bce73c88f7d83217afd6e6055fb05e108bbf"
   }
 ]
