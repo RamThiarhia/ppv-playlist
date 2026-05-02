@@ -1,6 +1,6 @@
 #EXTM3U
 #EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/4ebbc6108f20ad6b195f2bf2233393ef-thumbnail.jpg" group-title="NBA",Philadelphia 76ers vs. Boston Celtics 05/03 07:30 AM PHT
-#EXTVLCOPT:http-referrer=https://sharkstreams.net/get-stream.php?channel=2253
-#EXTVLCOPT:http-origin=https://sharkstreams.net
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://sh2.shfiles.cfd/live/boston/stream.m3u8?expires=1777736835&token=ef07c01a2aa46ea1f1b34bbf6a8740e4f96f9c5a1156f38940d721a9e924c539
+http://no-stream-yet.com/dummy.m3u8
