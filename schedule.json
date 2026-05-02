@@ -7,7 +7,7 @@
     "starts_at_iso": "2026-05-01T23:00:00+00:00",
     "roxie_name": "Detroit Pistons vs Orlando Magic",
     "link": "https://sharkstreams.net/get-stream.php?channel=2243",
-    "stream_url": "https://sh1.shfiles.cfd/live/magic/stream.m3u8?expires=1777679695&token=4555bd9065480c28a9fe9875c93ff1f4ae06a4b88194afc8ae5a7c943d1c585d"
+    "stream_url": "https://sh1.shfiles.cfd/live/magic/stream.m3u8?expires=1777679697&token=a1031516b0624d9015db1552a1046a6ed4b76a9d7f52926ff7cea027aad2896c"
   },
   {
     "name": "Cleveland Cavaliers vs. Toronto Raptors",
@@ -17,7 +17,7 @@
     "starts_at_iso": "2026-05-01T23:30:00+00:00",
     "roxie_name": "Cleveland Cavaliers vs Toronto Raptors",
     "link": "https://sharkstreams.net/get-stream.php?channel=2244",
-    "stream_url": "https://sh2.shfiles.cfd/live/raptors/stream.m3u8?expires=1777679705&token=51fe7701d6cac30c321094d66896b1c37eb0f7a27c2ca90b9d8e56787c9b8a7e"
+    "stream_url": "https://sh2.shfiles.cfd/live/raptors/stream.m3u8?expires=1777679704&token=172617af1739661fd67a28aab8005ab2b3ad781dbd12136b7cad28dbc7f7ff4d"
   },
   {
     "name": "Los Angeles Lakers vs. Houston Rockets",
@@ -27,6 +27,6 @@
     "starts_at_iso": "2026-05-02T01:30:00+00:00",
     "roxie_name": "Los Angeles Lakers vs Houston Rockets",
     "link": "https://sharkstreams.net/get-stream.php?channel=2245",
-    "stream_url": "https://sh3.shfiles.cfd/live/lakers/stream.m3u8?expires=1777679809&token=fa1294d9120ed2283f13cee16084bce73c88f7d83217afd6e6055fb05e108bbf"
+    "stream_url": "https://sh3.shfiles.cfd/live/lakers/stream.m3u8?expires=1777679779&token=6d5b258ce10ceab4ee8d603ed6b0a02f14180ab5e6758fe772304d7e214b2e93"
   }
 ]
