@@ -1,22 +1,21 @@
 [
   {
-    "name": "Orlando Magic vs. Detroit Pistons",
-    "poster": "https://api.ppv.to/assets/thumb/5a1989b847f4d7a9161e93d7d94c2e6c-thumbnail.jpg",
-    "roxie_name": "Orlando Magic vs Detroit Pistons",
+    "name": "Philadelphia 76ers vs. New York Knicks",
+    "poster": "https://api.ppv.to/assets/thumb/83d476551a7ab5b2bead6c9ea3b330ca-thumbnail.jpg",
+    "roxie_name": "Philadelphia 76ers vs New York Knicks",
     "link": "https://roxiestreams.su/nba-streams-1",
-    "display_name": "Orlando Magic vs. Detroit Pistons 05/04 03:30 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/5a1989b847f4d7a9161e93d7d94c2e6c-thumbnail.jpg",
-    "starts_at_iso": "2026-05-03T19:30:00+00:00",
-    "stream_url": "https://customer-fpmmd9cdewmb1wz2.cloudflarestream.com/983c4b6b95ad68687266ff32a65b58a7/manifest/stream_t114d638b2e27468205644f45b42cd9c1_r1613193161.m3u8?llhlsHBs=0.5"
+    "stream_url": "https://customer-fpmmd9cdewmb1wz2.cloudflarestream.com/983c4b6b95ad68687266ff32a65b58a7/manifest/video.m3u8",
+    "display_name": "Philadelphia 76ers vs. New York Knicks 05/05 08:00 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/83d476551a7ab5b2bead6c9ea3b330ca-thumbnail.jpg",
+    "starts_at_iso": "2026-05-05T00:00:00+00:00"
   },
   {
-    "name": "Toronto Raptors vs. Cleveland Cavaliers",
-    "poster": "https://api.ppv.to/assets/thumb/ae2e241dfb9c009b5d7a71a3548c51f7-thumbnail.jpg",
-    "roxie_name": "Toronto Raptors vs Cleveland Cavaliers",
+    "name": "Minnesota Timberwolves vs. San Antonio Spurs",
+    "poster": "https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg",
+    "roxie_name": "Minnesota Timberwolves vs San Antonio Spurs",
     "link": "https://roxiestreams.su/nba-streams-2",
-    "stream_url": "https://daffodil.shoncine.com/nba2.m3u8",
-    "display_name": "Toronto Raptors vs. Cleveland Cavaliers 05/04 07:30 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/ae2e241dfb9c009b5d7a71a3548c51f7-thumbnail.jpg",
-    "starts_at_iso": "2026-05-03T23:30:00+00:00"
+    "display_name": "Minnesota Timberwolves vs. San Antonio Spurs 05/05 09:30 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg",
+    "starts_at_iso": "2026-05-05T01:30:00+00:00"
   }
 ]
