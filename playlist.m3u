@@ -1,11 +1,11 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/b249ea3da1c573ebd0b79b784ee33461-thumbnail.jpg" group-title="NBA",Cleveland Cavaliers vs. Detroit Pistons 05/06 07:00 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
-#EXTVLCOPT:http-origin=https://roxiestreams.su
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.lphone.support/nba2.m3u8
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/08fb43cbbbea466cecae8466dc962ed3-thumbnail.jpg" group-title="NBA",Los Angeles Lakers vs. Oklahoma City Thunder 05/06 08:30 AM PHT
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/83d476551a7ab5b2bead6c9ea3b330ca-thumbnail.jpg" group-title="NBA",Philadelphia 76ers vs. New York Knicks 05/07 07:00 AM PHT
 #EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
 #EXTVLCOPT:http-origin=https://roxiestreams.su
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 https://daffodil.denishdhakal.com.np/nba.m3u8
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg" group-title="NBA",Minnesota Timberwolves vs. San Antonio Spurs 05/07 09:30 AM PHT
+#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-2
+#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+https://daffodil.lphone.support/nba2.m3u8
