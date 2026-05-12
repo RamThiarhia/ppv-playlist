@@ -1,22 +1,9 @@
 [
   {
-    "name": "Detroit Pistons vs. Cleveland Cavaliers",
-    "poster": "https://api.ppv.to/assets/thumb/c841822044463218d97b8a59ff0941e8-thumbnail.jpg",
-    "display_name": "Detroit Pistons vs. Cleveland Cavaliers 05/12 08:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/c841822044463218d97b8a59ff0941e8-thumbnail.jpg",
-    "starts_at_iso": "2026-05-12T00:00:00+00:00",
-    "roxie_name": "Detroit Pistons vs Cleveland Cavaliers",
-    "link": "https://roxiestreams.su/nba-streams-1",
-    "stream_url": "https://daffodil.ellitescripts.com/nba.m3u8"
-  },
-  {
-    "name": "Oklahoma City Thunder vs. Los Angeles Lakers",
-    "poster": "https://api.ppv.to/assets/thumb/e43b2ecb5fe83dff13807fa26cff30d8-thumbnail.jpg",
-    "display_name": "Oklahoma City Thunder vs. Los Angeles Lakers 05/12 10:30 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/e43b2ecb5fe83dff13807fa26cff30d8-thumbnail.jpg",
-    "starts_at_iso": "2026-05-12T02:30:00+00:00",
-    "roxie_name": "Oklahoma City Thunder vs Los Angeles Lakers",
-    "link": "https://roxiestreams.su/nba-streams-2",
-    "stream_url": "https://daffodil.ellitescripts.com/nba.m3u8"
+    "name": "Minnesota Timberwolves vs. San Antonio Spurs",
+    "poster": "https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg",
+    "display_name": "Minnesota Timberwolves vs. San Antonio Spurs 05/13 08:00 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg",
+    "starts_at_iso": "2026-05-13T00:00:00+00:00"
   }
 ]
