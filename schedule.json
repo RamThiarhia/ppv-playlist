@@ -1,12 +1,9 @@
 [
   {
-    "name": "Minnesota Timberwolves vs. San Antonio Spurs",
-    "poster": "https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg",
-    "display_name": "Minnesota Timberwolves vs. San Antonio Spurs 05/13 08:00 AM PHT",
-    "logo": "https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg",
-    "starts_at_iso": "2026-05-13T00:00:00+00:00",
-    "roxie_name": "Minnesota Timberwolves vs San Antonio Spurs",
-    "link": "https://roxiestreams.su/nba-streams-1",
-    "stream_url": "https://daffodil.ellitescripts.com/nba.m3u8"
+    "name": "Cleveland Cavaliers vs. Detroit Pistons",
+    "poster": "https://api.ppv.to/assets/thumb/b249ea3da1c573ebd0b79b784ee33461-thumbnail.jpg",
+    "display_name": "Cleveland Cavaliers vs. Detroit Pistons 05/14 08:00 AM PHT",
+    "logo": "https://api.ppv.to/assets/thumb/b249ea3da1c573ebd0b79b784ee33461-thumbnail.jpg",
+    "starts_at_iso": "2026-05-14T00:00:00+00:00"
   }
 ]

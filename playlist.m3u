@@ -1,6 +1,6 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/ba46de44925f154de2d99183175e5214-thumbnail.jpg" group-title="NBA",Minnesota Timberwolves vs. San Antonio Spurs 05/13 08:00 AM PHT
-#EXTVLCOPT:http-referrer=https://roxiestreams.su/nba-streams-1
-#EXTVLCOPT:http-origin=https://roxiestreams.su
+#EXTINF:-1 tvg-logo="https://api.ppv.to/assets/thumb/b249ea3da1c573ebd0b79b784ee33461-thumbnail.jpg" group-title="NBA",Cleveland Cavaliers vs. Detroit Pistons 05/14 08:00 AM PHT
+#EXTVLCOPT:http-referrer=
+#EXTVLCOPT:http-origin=
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-https://daffodil.ellitescripts.com/nba.m3u8
+http://no-stream-yet.com/dummy.m3u8
